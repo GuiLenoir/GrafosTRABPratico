@@ -8,9 +8,11 @@ namespace GrafosTRABPratico
 {
     internal class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             //INICIALIZADOR
+            string grafo = "path";
 
             //personalização
             Console.Title = "Máxima Logística S.A.";

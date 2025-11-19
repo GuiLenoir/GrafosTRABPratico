@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+
 
 namespace GrafosTRABPratico
 {
     public class Menu
     {
+
         //MENU DA APLICAÇÃO
 
         private SORL _sorl;
@@ -21,6 +24,7 @@ namespace GrafosTRABPratico
         {
             
             MenuPrincipal();
+
             
         }
 
@@ -147,7 +151,32 @@ namespace GrafosTRABPratico
                 switch (opcao)
                 {
                     case "1":
+                        //INSTANCIA A JANELA DE SELECIONAR
+                        OpenFileDialog janela = new OpenFileDialog
+                        {
+                            //TITULO DA JANELA
+                            Title = "Selecione um arquivo DIMACS",
+                            //FILTRAR ESCOLHAS E PERSONALIZAÇÃO
+                            Filter = "Grafos (*.dimacs)|*.dimacs|Outros arquivos de matriz/lista (*.*)|*.*"
+                        };
 
+                        //ABRE A JANELA E SE RESULTADO FOR OK A STRING VIRA O CAMINHO PRO ARQUIVO
+                        if (janela.ShowDialog() == DialogResult.OK)
+                        {
+                            //STRING VIRA O CAMINHO DO ARQUIVO SELECIONADO
+                            string caminho = janela.FileName;
+                            Console.WriteLine("Você selecionou: " + caminho);
+                            Console.ReadKey();
+
+                            // Aqui você pode chamar seu leitor DIMACS
+                            // var reader = new DimacsReader();
+                            // reader.LerArquivo(caminho);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Nenhum arquivo selecionado.");
+                            Console.ReadKey();
+                        }
                         break;
 
                     case "0":
