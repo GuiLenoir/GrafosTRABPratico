@@ -12,6 +12,9 @@ namespace GrafosTRABPratico
         static void Main(string[] args)
         {
             //INICIALIZADOR
+
+            //inicia o programa com um grafo já selecionado, caso queira
+            //caso não, existe opção de carregamento do grafo dentro do programa
             string grafo = "path";
 
             //personalização
