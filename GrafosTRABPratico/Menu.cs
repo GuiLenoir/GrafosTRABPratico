@@ -166,16 +166,19 @@ namespace GrafosTRABPratico
                             //STRING VIRA O CAMINHO DO ARQUIVO SELECIONADO
                             string caminho = janela.FileName;
                             Console.WriteLine("Você selecionou: " + caminho);
-                            Console.ReadKey();
+
+                            
+                            Console.ReadKey(true);
 
                             // Aqui você pode chamar seu leitor DIMACS
                             // var reader = new DimacsReader();
                             // reader.LerArquivo(caminho);
+                            _sorl.CarregarGrafo(caminho);
                         }
                         else
                         {
                             Console.WriteLine("Nenhum arquivo selecionado.");
-                            Console.ReadKey();
+                            Console.ReadKey(true);
                         }
                         break;
 

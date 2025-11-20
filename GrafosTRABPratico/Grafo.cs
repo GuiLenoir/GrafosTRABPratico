@@ -14,60 +14,93 @@ namespace GrafosTRABPratico
         //TODA VEZ QUE MUDAR TEM QUE VERIFICAR SE É ESPARSO OU DENSO
 
         //se é matriz ou lista (denso ou esparso)   "matriz" ou "lista"
-        private string tipoRepresentacao;
+        private string _tipoRepresentacao;
 
         //dicionario dos vértices
-        private Dictionary<string, Hub> hubs;
+        private Dictionary<int, Hub> _hubs;
 
         //variaveis de representação (rotas/arestas) 
-        private double[,] matrizADJ;
-        private Dictionary<Hub, List<Rota>> listaADJ;
+        private Rota[,] _matrizADJ;
+        private Dictionary<Hub, List<Rota>> _listaADJ;
+        private int _qntdVertice;
+        private int _qntdAresta;
         
         public Grafo()
         {
-            hubs = new Dictionary<string, Hub>();
-            tipoRepresentacao = "lista";
+            _hubs = new Dictionary<int, Hub>();
+            _tipoRepresentacao = "lista";
         }
 
         public void CarregarArquivo(string caminho)
         {
+            //vetor de todas as linhas do arquivo
             string[] linhasArquivo = File.ReadAllLines(caminho);
-            int n, m = 0;
+            //vetor que armazena a 1 linha do arquivo (que contem num de vertices e arestas)
+            string[] linhaCabecalho = linhasArquivo[0].Split(' ');
 
-            foreach (string linha in linhasArquivo)
+            _qntdVertice = int.Parse(linhaCabecalho[0]);
+            _qntdAresta = int.Parse(linhaCabecalho[1]);
+
+            //VE SE É DENSO OU ESPARSO E ATUALIZA NO ATRIBUTO
+            AtualizarRepresentacao();
+
+            //ADICIONA OS VÉRTICES NO GRAFO
+            for (int i = 0; i < _qntdVertice; i++)
             {
-                string[] partes = linha.Split(' ');
+                Hub h = new Hub();
+                _hubs.Add(h.ID(), h);
+            }
 
-                if (partes[0] == "p")
+            //ADICIONA AS ARESTAS NO GRAFO DEPENDENDO DA REPRESENTACAO
+            //começa a partir da 2 linha (a 1 é de cabecalho)
+            for (int i = 1; i < linhasArquivo.Length; i++)
+            {
+                //separa cada elemento da linha em vetor
+                string[] linhaParte = linhasArquivo[i].Split(' ');
+
+                //1 numero = vertice de origem
+                //2 numero = vertice de destino
+                //3 numero = peso da aresta
+                //4 numero = capacidade da aresta
+                int verticeOrigem = int.Parse(linhaParte[0]);
+                int verticeDestino = int.Parse(linhaParte[1]);
+                double peso = int.Parse(linhaParte[2]);
+                double capacidade = int.Parse(linhaParte[3]);
+
+                Hub origem = _hubs[verticeOrigem];
+                Hub destino = _hubs[verticeDestino];
+
+                Rota rota = new Rota(origem, destino, peso, capacidade);
+
+                //se for matriz adiciona na matriz, se for lista adiciona na lista
+                if (_tipoRepresentacao == "matriz")
                 {
-                    n = int.Parse(partes[2]); // número de vértices
-                    m = int.Parse(partes[3]); // número de arestas
-
-                    // Criar vértices
-                    for (int i = 1; i <= n; i++)
-                    {
-                        // AdicionarVertice("V" + i);
-                    }
+                    _matrizADJ[verticeOrigem, verticeDestino] = rota;
+                    
                 }
-                else if (partes[0] == "e")
+                else
                 {
-                    int origem = int.Parse(partes[1]);
-                    int destino = int.Parse(partes[2]);
-                    double custo = double.Parse(partes[3]);
-                    double capacidade = double.Parse(partes[4]);
-
-                    //AdicionarAresta(origem, destino, custo, capacidade);
+                    _listaADJ[origem].Add(rota);
+                    
                 }
-
-                // Após carregar, decidir representação
-                //DefinirRepresentacao();
             }
         }
 
-        public void CalcularDensidade()
+        private double CalcularDensidade()
         {
-            int qntdVertices = hubs.Count;
-            //int qntdArestas = 
+           return _qntdAresta / (_qntdVertice * (_qntdVertice - 1));
+        }
+
+        public void AtualizarRepresentacao()
+        {
+            if (CalcularDensidade() >= 0.5)
+            {
+                _tipoRepresentacao = "matriz";
+            }
+            else
+            {
+                _tipoRepresentacao = "lista";
+            }
         }
         private void CarregarMatriz()
         {

@@ -15,11 +15,17 @@ namespace GrafosTRABPratico
         private int _id;
         private string _nome;
 
-        public Hub(string nome)
+        public Hub()
         {
-            _nome = nome;
             _id = cont;
             cont++;
         }
+
+        public int ID ()
+        {
+            return _id;
+        }
+
+       
     }
 }
