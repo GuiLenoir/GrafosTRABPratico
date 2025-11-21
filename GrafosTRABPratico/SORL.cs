@@ -15,7 +15,13 @@ namespace GrafosTRABPratico
 
         public void CarregarGrafo(string caminho)
         {
+            _grafo = new Grafo();
             _grafo.CarregarArquivo(caminho);
+        }
+
+        public void VisualizarGrafo()
+        {
+            _grafo.VisualizarGrafo();
         }
     }
 }

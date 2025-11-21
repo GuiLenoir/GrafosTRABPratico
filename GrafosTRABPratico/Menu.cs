@@ -51,7 +51,7 @@ namespace GrafosTRABPratico
 
                 Console.WriteLine("=============== MENU PRINCIPAL ===============");
                 Console.WriteLine("1 - Grafos/Dados");
-                Console.WriteLine("2 - ");
+                Console.WriteLine("2 - Visualizar Grafo");
                 Console.WriteLine("3 - Análises");
                 Console.WriteLine("0 - Sair");
                 Console.WriteLine("==============================================");
@@ -66,6 +66,7 @@ namespace GrafosTRABPratico
                         break;
 
                     case "2":
+                        _sorl.VisualizarGrafo();
                         break;
 
                     case "3":
@@ -96,7 +97,7 @@ namespace GrafosTRABPratico
                 Console.WriteLine("3 - Expansão de Rede de Comunicação");
                 Console.WriteLine("4 - Agendamento de Manutenções sem Conflito");
                 Console.WriteLine("4 - Rota Única de Inspeção");
-                Console.WriteLine("0 - Sair");
+                Console.WriteLine("0 - Voltar");
                 Console.WriteLine("==============================================");
 
                 Console.Write("Selecione uma opção: ");
@@ -142,7 +143,7 @@ namespace GrafosTRABPratico
                 Console.WriteLine("1 - Carregar Grafo (DIMACS)");
                 Console.WriteLine("2 - Adicionar Novo HUB (VÉRTICE)");
                 Console.WriteLine("2 - Adicionar Nova ROTA (ARESTA)");
-                Console.WriteLine("0 - Sair");
+                Console.WriteLine("0 - Voltar");
                 Console.WriteLine("==============================================");
 
                 Console.Write("Selecione uma opção: ");
@@ -165,7 +166,7 @@ namespace GrafosTRABPratico
                         {
                             //STRING VIRA O CAMINHO DO ARQUIVO SELECIONADO
                             string caminho = janela.FileName;
-                            Console.WriteLine("Você selecionou: " + caminho);
+                            Console.WriteLine("\nVocê selecionou: " + caminho);
 
                             
                             Console.ReadKey(true);
@@ -174,6 +175,7 @@ namespace GrafosTRABPratico
                             // var reader = new DimacsReader();
                             // reader.LerArquivo(caminho);
                             _sorl.CarregarGrafo(caminho);
+                            return;
                         }
                         else
                         {

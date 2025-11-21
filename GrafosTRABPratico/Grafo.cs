@@ -27,12 +27,15 @@ namespace GrafosTRABPratico
         
         public Grafo()
         {
+            Hub.Resetar();
             _hubs = new Dictionary<int, Hub>();
             _tipoRepresentacao = "lista";
+            _listaADJ = new Dictionary<Hub, List<Rota>>();
         }
 
         public void CarregarArquivo(string caminho)
         {
+            
             //vetor de todas as linhas do arquivo
             string[] linhasArquivo = File.ReadAllLines(caminho);
             //vetor que armazena a 1 linha do arquivo (que contem num de vertices e arestas)
@@ -51,6 +54,13 @@ namespace GrafosTRABPratico
                 _hubs.Add(h.ID(), h);
             }
 
+            for (int j = 1; j <= _qntdVertice; j++)
+            {
+                Console.WriteLine("J: " + j);
+                Console.WriteLine($"OK : {_hubs[j].ID()}");
+                _listaADJ.Add(_hubs[j], new List<Rota>());
+            }
+
             //ADICIONA AS ARESTAS NO GRAFO DEPENDENDO DA REPRESENTACAO
             //começa a partir da 2 linha (a 1 é de cabecalho)
             for (int i = 1; i < linhasArquivo.Length; i++)
@@ -67,32 +77,38 @@ namespace GrafosTRABPratico
                 double peso = int.Parse(linhaParte[2]);
                 double capacidade = int.Parse(linhaParte[3]);
 
+                //pega os vertices baseado no que foi falado no dimacs
                 Hub origem = _hubs[verticeOrigem];
                 Hub destino = _hubs[verticeDestino];
 
                 Rota rota = new Rota(origem, destino, peso, capacidade);
 
                 //se for matriz adiciona na matriz, se for lista adiciona na lista
+
+
                 if (_tipoRepresentacao == "matriz")
                 {
                     _matrizADJ[verticeOrigem, verticeDestino] = rota;
-                    
                 }
                 else
                 {
-                    _listaADJ[origem].Add(rota);
-                    
+                    _listaADJ[_hubs[verticeOrigem]].Add(rota);
                 }
             }
+            
         }
 
         private double CalcularDensidade()
         {
+            //A CONTA É -       QUANTIDADE DE ARESTAS / QUANTIDADE DE VERTICES * (QUANTIDADE DE VERTICES - 1)
+            //SO SERVE PRA GRAFO DIRECIONADO
            return _qntdAresta / (_qntdVertice * (_qntdVertice - 1));
         }
 
         public void AtualizarRepresentacao()
         {
+            //DENSIDADE IGUAL OU MAIOR QUE 0.5 = DENSO (MATRIZ)
+            //DENSIDADE MENOR QUE 0.5 = ESPARSO (LISTA)
             if (CalcularDensidade() >= 0.5)
             {
                 _tipoRepresentacao = "matriz";
@@ -102,9 +118,50 @@ namespace GrafosTRABPratico
                 _tipoRepresentacao = "lista";
             }
         }
+
+        public void VisualizarGrafo()
+        {
+           
+            if (_tipoRepresentacao == "matriz")
+            {
+                Console.WriteLine("MATRIZ DE ADJACENCIA");
+                int linhas = _matrizADJ.GetLength(0); // número de linhas
+                int colunas = _matrizADJ.GetLength(1); // número de colunas
+
+                for (int i = 0; i < linhas; i++)
+                {
+                    for (int j = 0; j < colunas; j++)
+                    {
+                        Console.Write(_matrizADJ[i, j].GetPeso() + "\t"); // imprime elemento com tabulação
+                    }
+                    Console.WriteLine(); // quebra de linha ao fim de cada linha
+                }
+                Console.ReadKey(true);
+            }
+            else
+            {
+                Console.WriteLine("LISTA DE ADJACENCIA");
+
+                
+                
+                foreach (KeyValuePair<Hub, List<Rota>> rotas in _listaADJ)
+                {
+                    Console.Write(rotas.Key.ID() + ": ");
+
+                    foreach (Rota rota in rotas.Value)
+                    {
+                        Console.Write(rota.GetPeso() + " ");
+                    }
+
+                    Console.WriteLine();
+
+                }
+                Console.ReadKey(true);
+            }
+        }
         private void CarregarMatriz()
         {
-
+           
         }
     }
 }

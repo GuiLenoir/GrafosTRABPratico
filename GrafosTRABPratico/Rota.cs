@@ -23,5 +23,10 @@ namespace GrafosTRABPratico
             _peso = custo;
             _capacidade = capacidade;
         }
+
+        public double GetPeso()
+        {
+            return _peso;
+        }
     }
 }

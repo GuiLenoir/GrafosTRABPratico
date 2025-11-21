@@ -21,6 +21,11 @@ namespace GrafosTRABPratico
             cont++;
         }
 
+        public static void Resetar()
+        {
+            cont = 1;
+        }
+
         public int ID ()
         {
             return _id;
