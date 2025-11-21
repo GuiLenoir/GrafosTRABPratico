@@ -60,6 +60,8 @@ namespace GrafosTRABPratico
                 Console.WriteLine($"OK : {_hubs[j].ID()}");
                 _listaADJ.Add(_hubs[j], new List<Rota>());
             }
+            _matrizADJ = new Rota[_qntdVertice + 1, _qntdVertice + 1];
+
 
             //ADICIONA AS ARESTAS NO GRAFO DEPENDENDO DA REPRESENTACAO
             //começa a partir da 2 linha (a 1 é de cabecalho)
@@ -132,7 +134,14 @@ namespace GrafosTRABPratico
                 {
                     for (int j = 0; j < colunas; j++)
                     {
-                        Console.Write(_matrizADJ[i, j].GetPeso() + "\t"); // imprime elemento com tabulação
+                        if (_matrizADJ[i, j] == null)
+                        {
+                            Console.Write("0  "); // imprime elemento com tabulação
+                        }
+                        else
+                        {
+                            Console.Write(_matrizADJ[i, j].GetPeso() + "  "); // imprime elemento com tabulação
+                        }
                     }
                     Console.WriteLine(); // quebra de linha ao fim de cada linha
                 }
