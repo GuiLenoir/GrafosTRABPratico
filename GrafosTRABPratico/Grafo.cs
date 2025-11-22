@@ -126,14 +126,31 @@ namespace GrafosTRABPratico
            
             if (_tipoRepresentacao == "matriz")
             {
-                Console.WriteLine("MATRIZ DE ADJACENCIA");
+                Console.WriteLine("\nMATRIZ DE ADJACENCIA");
+
                 int linhas = _matrizADJ.GetLength(0); // número de linhas
                 int colunas = _matrizADJ.GetLength(1); // número de colunas
 
+                Console.Write("   ");
+                for (int j = 0; j < colunas; j++)
+                {
+                    Console.Write(j + "  ");
+                }
+                Console.WriteLine();
+
+                Console.Write("  ");
+                for (int j = 0; j < colunas; j++)
+                {
+                    Console.Write("---");
+                }
+                Console.WriteLine();
+
                 for (int i = 0; i < linhas; i++)
                 {
+                    Console.Write(i + "| "); // número da linha
                     for (int j = 0; j < colunas; j++)
                     {
+                        
                         if (_matrizADJ[i, j] == null)
                         {
                             Console.Write("0  "); // imprime elemento com tabulação
@@ -149,7 +166,7 @@ namespace GrafosTRABPratico
             }
             else
             {
-                Console.WriteLine("LISTA DE ADJACENCIA");
+                Console.WriteLine("\nLISTA DE ADJACENCIA");
 
                 
                 
