@@ -60,6 +60,8 @@ namespace GrafosTRABPratico
                 Console.WriteLine($"OK : {_hubs[j].ID()}");
                 _listaADJ.Add(_hubs[j], new List<Rota>());
             }
+            _matrizADJ = new Rota[_qntdVertice, _qntdVertice];
+
 
             //ADICIONA AS ARESTAS NO GRAFO DEPENDENDO DA REPRESENTACAO
             //começa a partir da 2 linha (a 1 é de cabecalho)
@@ -88,7 +90,7 @@ namespace GrafosTRABPratico
 
                 if (_tipoRepresentacao == "matriz")
                 {
-                    _matrizADJ[verticeOrigem, verticeDestino] = rota;
+                    _matrizADJ[verticeOrigem-1, verticeDestino-1] = rota;
                 }
                 else
                 {
@@ -124,15 +126,38 @@ namespace GrafosTRABPratico
            
             if (_tipoRepresentacao == "matriz")
             {
-                Console.WriteLine("MATRIZ DE ADJACENCIA");
+                Console.WriteLine("\nMATRIZ DE ADJACENCIA");
+
                 int linhas = _matrizADJ.GetLength(0); // número de linhas
                 int colunas = _matrizADJ.GetLength(1); // número de colunas
+                Console.Write("   ");
+                for (int j = 0; j < colunas; j++)
+                {
+                    Console.Write(j+1 + "  ");
+                }
+                Console.WriteLine();
+
+                Console.Write("  ");
+                for (int j = 0; j < colunas; j++)
+                {
+                    Console.Write("---");
+                }
+                Console.WriteLine();
 
                 for (int i = 0; i < linhas; i++)
                 {
+                    Console.Write(i+1 + "| "); // número da linha
                     for (int j = 0; j < colunas; j++)
                     {
-                        Console.Write(_matrizADJ[i, j].GetPeso() + "\t"); // imprime elemento com tabulação
+                        
+                        if (_matrizADJ[i, j] == null)
+                        {
+                            Console.Write("0  "); // imprime elemento com tabulação
+                        }
+                        else
+                        {
+                            Console.Write(_matrizADJ[i, j].GetPeso() + "  "); // imprime elemento com tabulação
+                        }
                     }
                     Console.WriteLine(); // quebra de linha ao fim de cada linha
                 }
@@ -140,7 +165,7 @@ namespace GrafosTRABPratico
             }
             else
             {
-                Console.WriteLine("LISTA DE ADJACENCIA");
+                Console.WriteLine("\nLISTA DE ADJACENCIA");
 
                 
                 
