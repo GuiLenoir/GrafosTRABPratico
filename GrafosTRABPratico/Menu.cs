@@ -184,6 +184,13 @@ namespace GrafosTRABPratico
                         }
                         break;
 
+                    case "2":
+                        _sorl.AdicionarHub();
+                        
+                        Console.WriteLine($"O vértice {_sorl.QuantidadeVertices()} foi adicionado.");
+                        Console.ReadKey(true);
+                        break;
+
                     case "0":
                         Console.WriteLine("\nSaindo...");
                         return;  // encerra o menu

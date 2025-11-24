@@ -19,9 +19,19 @@ namespace GrafosTRABPratico
             _grafo.CarregarArquivo(caminho);
         }
 
+        public void AdicionarHub()
+        {
+            _grafo.AddVertice();
+        }
+
         public void VisualizarGrafo()
         {
             _grafo.VisualizarGrafo();
+        }
+
+        public string QuantidadeVertices()
+        {
+            return _grafo.GetQNTDVertices();
         }
     }
 }
