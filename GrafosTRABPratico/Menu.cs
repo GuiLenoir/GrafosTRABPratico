@@ -142,7 +142,7 @@ namespace GrafosTRABPratico
                 Console.WriteLine("=============== MENU DE GRAFOS ===============");
                 Console.WriteLine("1 - Carregar Grafo (DIMACS)");
                 Console.WriteLine("2 - Adicionar Novo HUB (VÉRTICE)");
-                Console.WriteLine("2 - Adicionar Nova ROTA (ARESTA)");
+                Console.WriteLine("3 - Adicionar Nova ROTA (ARESTA)");
                 Console.WriteLine("0 - Voltar");
                 Console.WriteLine("==============================================");
 
@@ -188,6 +188,27 @@ namespace GrafosTRABPratico
                         _sorl.AdicionarHub();
                         
                         Console.WriteLine($"O vértice {_sorl.QuantidadeVertices()} foi adicionado.");
+                        Console.ReadKey(true);
+                        break;
+
+                    case "3":
+
+                        Console.WriteLine($"Qual o hub (vertice) de origem?");
+                        int origem = int.Parse(Console.ReadLine());
+
+                        Console.WriteLine($"Qual o hub (vertice) de destino?");
+                        int destino = int.Parse(Console.ReadLine());
+
+                        Console.WriteLine($"Qual o peso da rota (aresta)?");
+                        double peso = double.Parse(Console.ReadLine());
+
+                        Console.WriteLine($"Qual a capacidade da rota (aresta)?");
+                        double capacidade = double.Parse(Console.ReadLine());
+
+
+                        _sorl.AdicionarRota(origem, destino, peso, capacidade);
+
+                        Console.WriteLine($"\nA rota {origem} -- [{peso}] --> {destino} foi adicionada");
                         Console.ReadKey(true);
                         break;
 

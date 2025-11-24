@@ -24,6 +24,11 @@ namespace GrafosTRABPratico
             _grafo.AddVertice();
         }
 
+        public void AdicionarRota(int origem, int destino, double peso, double capacidade)
+        {
+            _grafo.AddAresta(origem, destino, peso, capacidade);
+        }
+
         public void VisualizarGrafo()
         {
             _grafo.VisualizarGrafo();

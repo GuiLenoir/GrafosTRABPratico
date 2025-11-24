@@ -39,27 +39,7 @@ namespace GrafosTRABPratico
             _listaADJ = new Dictionary<Hub, List<Rota>>();
         }
 
-        //metodo pra construir a lista
-        private Dictionary<Hub, List<Rota>> InicializarLista()
-        {
-            //inicializa a lista
-            Dictionary < Hub, List < Rota >> lista = new Dictionary<Hub, List<Rota>>();
-
-            foreach (Hub hub in _hubs.Values)
-            {
-                lista.Add(hub, new List<Rota>());
-            }
-
-            return lista;
-        }
-
-        //metodo pra construir a matriz
-        private Rota[,] InicializarMatriz()
-        {
-            //inicializa a matriz
-            Rota[,] matriz = new Rota[_qntdVertice, _qntdVertice];
-            return matriz;
-        }
+        
         public void CarregarArquivo(string caminho)
         {
             
@@ -69,7 +49,7 @@ namespace GrafosTRABPratico
             string[] linhaCabecalho = linhasArquivo[0].Split(' ');
 
             int quantVertices = int.Parse(linhaCabecalho[0]);
-            _qntdAresta = int.Parse(linhaCabecalho[1]);
+            int quantAresta = int.Parse(linhaCabecalho[1]);
 
             //VE SE É DENSO OU ESPARSO E ATUALIZA NO ATRIBUTO
             
@@ -81,7 +61,7 @@ namespace GrafosTRABPratico
             }
 
             //atualiza a representação de acordo com a densidade
-            AtualizarRepresentacao();
+            AtualizarRepresentacao(quantAresta);
 
             if (_tipoRepresentacao == "lista")
             {
@@ -118,26 +98,9 @@ namespace GrafosTRABPratico
             
         }
 
-        private double CalcularDensidade()
-        {
-            //A CONTA É -       QUANTIDADE DE ARESTAS / QUANTIDADE DE VERTICES * (QUANTIDADE DE VERTICES - 1)
-            //SO SERVE PRA GRAFO DIRECIONADO
-           return _qntdAresta / (_qntdVertice * (_qntdVertice - 1));
-        }
 
-        public void AtualizarRepresentacao()
-        {
-            //DENSIDADE IGUAL OU MAIOR QUE 0.5 = DENSO (MATRIZ)
-            //DENSIDADE MENOR QUE 0.5 = ESPARSO (LISTA)
-            if (CalcularDensidade() >= 0.5)
-            {
-                _tipoRepresentacao = "matriz";
-            }
-            else
-            {
-                _tipoRepresentacao = "lista";
-            }
-        }
+
+
 
         public void VisualizarGrafo()
         {
@@ -193,16 +156,22 @@ namespace GrafosTRABPratico
 
                     foreach (Rota rota in rotas.Value)
                     {
-                        Console.Write(rota.GetPeso() + " ");
+                        Console.Write($"[{rota.GetDestino().ID()}, {rota.GetPeso()}] ");
                     }
 
                     Console.WriteLine();
 
                 }
+
+                Console.WriteLine($"\n\n EXEMPLO:  V1: [V2, peso V2]");
                 Console.ReadKey(true);
             }
         }
         
+        
+
+        
+
         private Hub CarregarVertice()
         {
             //adiciona um vertice no dicionario hub
@@ -218,31 +187,11 @@ namespace GrafosTRABPratico
             Hub h = CarregarVertice();
 
             //string pra ver se a representação vai mudar depois
-            string mudanca = _tipoRepresentacao;
-
-            //verifica a representação
-            AtualizarRepresentacao();
-
-            //bool que indica se houve mudança na representação ou não
-            bool mudou = mudanca == _tipoRepresentacao ? true : false;
-            
-            // se mudou, faz a conversão (que já cria o vertice automaticamente também)
-            if (mudou == false)
-            {
-                if (_tipoRepresentacao == "lista")
-                {
-                    ConverterMatrizParaLista();
-                    
-                }
-                else
-                {
-                    ConverterListaParaMatriz();
-                }
-            }
-
             //se não houve mudança, só adiciona o vertice sem conversão
-            else
+
+            if (!MudouRepresentacao())
             {
+
                 if (_tipoRepresentacao == "lista")
                 {
                     _listaADJ.Add(_hubs[h.ID()], new List<Rota>());
@@ -267,7 +216,43 @@ namespace GrafosTRABPratico
                     _matrizADJ = novaMatriz;
                 }
             }
+
         }
+
+        //ESSE METODO ADICIONA ARESTA SEM AUMENTAR O CONTADOR (APENAS CARREGA A ARESTA DO DIMAC)
+        private Rota CarregarAresta(int verticeOrigem, int verticeDestino, double peso, double capacidade)
+        {
+            //pega os vertices baseado no que foi falado no dimacs
+            Hub origem = _hubs[verticeOrigem];
+            Hub destino = _hubs[verticeDestino];
+
+            Rota rota = new Rota(origem, destino, peso, capacidade);
+
+            //se for matriz adiciona na matriz, se for lista adiciona na lista
+
+
+            if (_tipoRepresentacao == "matriz")
+            {
+                _matrizADJ[verticeOrigem - 1, verticeDestino - 1] = rota;
+            }
+            else
+            {
+                _listaADJ[_hubs[verticeOrigem]].Add(rota);
+            }
+
+            _qntdAresta++;
+            return rota;
+        }
+
+        //ESSE METODO É PRA COLOCAR A ARESTA AUMENTANDO NO CONTADOR
+        public void AddAresta(int verticeOrigem, int verticeDestino, double peso, double capacidade)
+        {
+           Rota rota = CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
+
+           MudouRepresentacao();
+        }
+
+        
 
         private void ConverterMatrizParaLista()
         {
@@ -276,7 +261,7 @@ namespace GrafosTRABPratico
             // inicializa lista
             novaLista = InicializarLista();
 
-            
+
             int linhas = _matrizADJ.GetLength(0); // número de linhas
             int colunas = _matrizADJ.GetLength(1); // número de colunas
 
@@ -296,7 +281,7 @@ namespace GrafosTRABPratico
                     }
                 }
             }
-            
+
 
             // substitui
             _listaADJ = novaLista;
@@ -326,35 +311,80 @@ namespace GrafosTRABPratico
             _matrizADJ = novaMatriz;
         }
 
-        //ESSE METODO É PRA COLOCAR A ARESTA AUMENTANDO NO CONTADOR
-        private void AddAresta(int verticeOrigem, int verticeDestino, double peso, double capacidade)
+        //metodo pra construir a lista
+        private Dictionary<Hub, List<Rota>> InicializarLista()
         {
-            CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
-            _qntdAresta++;
+            //inicializa a lista
+            Dictionary<Hub, List<Rota>> lista = new Dictionary<Hub, List<Rota>>();
+
+            foreach (Hub hub in _hubs.Values)
+            {
+                lista.Add(hub, new List<Rota>());
+            }
+
+            return lista;
         }
 
-        //ESSE METODO ADICIONA ARESTA SEM AUMENTAR O CONTADOR (APENAS CARREGA A ARESTA DO DIMAC)
-        public void CarregarAresta(int verticeOrigem, int verticeDestino, double peso, double capacidade)
+        //metodo pra construir a matriz
+        private Rota[,] InicializarMatriz()
         {
-            //pega os vertices baseado no que foi falado no dimacs
-            Hub origem = _hubs[verticeOrigem];
-            Hub destino = _hubs[verticeDestino];
+            //inicializa a matriz
+            Rota[,] matriz = new Rota[_qntdVertice, _qntdVertice];
+            return matriz;
+        }
 
-            Rota rota = new Rota(origem, destino, peso, capacidade);
-
-            //se for matriz adiciona na matriz, se for lista adiciona na lista
-
-
-            if (_tipoRepresentacao == "matriz")
+        public void AtualizarRepresentacao(int quantAresta = 0)
+        {
+            if (quantAresta != 0)
             {
-                _matrizADJ[verticeOrigem - 1, verticeDestino - 1] = rota;
+                _qntdAresta = quantAresta;
+            }
+            //DENSIDADE IGUAL OU MAIOR QUE 0.5 = DENSO (MATRIZ)
+            //DENSIDADE MENOR QUE 0.5 = ESPARSO (LISTA)
+            if (CalcularDensidade() >= 0.5)
+            {
+                _tipoRepresentacao = "matriz";
             }
             else
             {
-                _listaADJ[_hubs[verticeOrigem]].Add(rota);
+                _tipoRepresentacao = "lista";
             }
         }
 
+        private bool MudouRepresentacao()
+        {
+            string mudanca = _tipoRepresentacao;
+
+            //verifica a representação
+            AtualizarRepresentacao();
+
+            //bool que indica se houve mudança na representação ou não
+            bool estaIgual = mudanca == _tipoRepresentacao ? true : false;
+
+            // se mudou, faz a conversão (que já cria o vertice automaticamente também)
+            if (estaIgual == false)
+            {
+                if (_tipoRepresentacao == "lista")
+                {
+                    ConverterMatrizParaLista();
+
+                }
+                else
+                {
+                    ConverterListaParaMatriz();
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+        private double CalcularDensidade()
+        {
+            //A CONTA É -       QUANTIDADE DE ARESTAS / QUANTIDADE DE VERTICES * (QUANTIDADE DE VERTICES - 1)
+            //SO SERVE PRA GRAFO DIRECIONADO
+            return _qntdAresta / (_qntdVertice * (_qntdVertice - 1));
+        }
         public string GetQNTDVertices()
         {
             return $"{_qntdVertice}";
