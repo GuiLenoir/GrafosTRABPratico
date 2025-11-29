@@ -28,5 +28,10 @@ namespace GrafosTRABPratico
         {
             return _peso;
         }
+        
+        public Hub GetDestino()
+        {
+            return _destino;
+        }
     }
 }
