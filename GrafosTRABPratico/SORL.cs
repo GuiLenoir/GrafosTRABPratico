@@ -23,14 +23,32 @@ namespace GrafosTRABPratico
             _grafo.CarregarArquivo(caminho);
         }
 
-        public void AdicionarHub()
+        public bool AdicionarHub()
         {
-            _grafo.AddVertice();
+            try
+            {
+                if (_grafo.GetQNTDVertices() == 0)
+                {
+                    throw new Exception("Grafo vazio");
+                }
+                else
+                {
+                    _grafo.AddVertice();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("Erro ao adicionar vértice: O grafo está vazio");
+                Console.Error.WriteLine($"ERRO: ({ex.Message})");
+                return false;
+            }
+            return true;
+            
         }
 
-        public void AdicionarRota(int origem, int destino, double peso, double capacidade)
+        public bool AdicionarRota(int origem, int destino, double peso, double capacidade)
         {
-            _grafo.AddAresta(origem, destino, peso, capacidade);
+            return _grafo.AddAresta(origem, destino, peso, capacidade);
         }
 
         public void VisualizarGrafo()
@@ -40,7 +58,7 @@ namespace GrafosTRABPratico
 
         public string QuantidadeVertices()
         {
-            return _grafo.GetQNTDVertices();
+            return  $"{_grafo.GetQNTDVertices()}";
         }
     }
 }

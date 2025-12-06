@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -42,11 +43,16 @@ namespace GrafosTRABPratico
         
         public void CarregarArquivo(string caminho)
         {
-            
+            try
+            {
+
+           
             //vetor de todas as linhas do arquivo
             string[] linhasArquivo = File.ReadAllLines(caminho);
             //vetor que armazena a 1 linha do arquivo (que contem num de vertices e arestas)
             string[] linhaCabecalho = linhasArquivo[0].Split(' ');
+
+
 
             int quantVertices = int.Parse(linhaCabecalho[0]);
             int quantAresta = int.Parse(linhaCabecalho[1]);
@@ -95,7 +101,13 @@ namespace GrafosTRABPratico
                 //metodo que carrega as arestas (diferente do adicionar arestas)
                 CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
             }
-            
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nO formato do arquivo não está condizente com o formato DIMAC\nErro: ({ex.Message})");
+                Console.ReadKey(true);
+            }
+
         }
 
 
@@ -104,6 +116,12 @@ namespace GrafosTRABPratico
 
         public void VisualizarGrafo()
         {
+            if (_qntdVertice == 0 && _qntdAresta == 0)
+            {
+                Console.WriteLine("\n[ NENHUM GRAFO CARREGADO ]");
+                Console.ReadKey(true);
+                return;
+            }
            
             if (_tipoRepresentacao == "matriz")
             {
@@ -163,7 +181,7 @@ namespace GrafosTRABPratico
 
                 }
 
-                Console.WriteLine($"\n\n EXEMPLO:  V1: [V2, peso V2]");
+                Console.WriteLine($"\n\nEXEMPLO:  V1: [V2, peso aresta]");
                 Console.ReadKey(true);
             }
         }
@@ -183,6 +201,7 @@ namespace GrafosTRABPratico
         }
         public void AddVertice()
         {
+            
             //adiciona no dicionario
             Hub h = CarregarVertice();
 
@@ -245,11 +264,21 @@ namespace GrafosTRABPratico
         }
 
         //ESSE METODO É PRA COLOCAR A ARESTA AUMENTANDO NO CONTADOR
-        public void AddAresta(int verticeOrigem, int verticeDestino, double peso, double capacidade)
+        public bool AddAresta(int verticeOrigem, int verticeDestino, double peso, double capacidade)
         {
+            try { 
            Rota rota = CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
-
+           
            MudouRepresentacao();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("ERRO!: Uma das rotas fornecidas não está presente no grafo.\n");
+                Console.Error.WriteLine($"Erro: ({ex.Message})");
+                return false;
+            }
+
+            return true;
         }
 
         
@@ -385,9 +414,9 @@ namespace GrafosTRABPratico
             //SO SERVE PRA GRAFO DIRECIONADO
             return _qntdAresta / (_qntdVertice * (_qntdVertice - 1));
         }
-        public string GetQNTDVertices()
+        public int GetQNTDVertices()
         {
-            return $"{_qntdVertice}";
+            return _qntdVertice;
         }
     }
 }

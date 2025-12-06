@@ -96,7 +96,7 @@ namespace GrafosTRABPratico
                 Console.WriteLine("2 - Capacidade Máxima de Escoamento");
                 Console.WriteLine("3 - Expansão de Rede de Comunicação");
                 Console.WriteLine("4 - Agendamento de Manutenções sem Conflito");
-                Console.WriteLine("4 - Rota Única de Inspeção");
+                Console.WriteLine("5 - Rota Única de Inspeção");
                 Console.WriteLine("0 - Voltar");
                 Console.WriteLine("==============================================");
 
@@ -185,9 +185,11 @@ namespace GrafosTRABPratico
                         break;
 
                     case "2":
-                        _sorl.AdicionarHub();
+                        if (_sorl.AdicionarHub())
+                        {
+                            Console.WriteLine($"O vértice {_sorl.QuantidadeVertices()} foi adicionado.");
+                        }
                         
-                        Console.WriteLine($"O vértice {_sorl.QuantidadeVertices()} foi adicionado.");
                         Console.ReadKey(true);
                         break;
 
@@ -206,9 +208,10 @@ namespace GrafosTRABPratico
                         double capacidade = double.Parse(Console.ReadLine());
 
 
-                        _sorl.AdicionarRota(origem, destino, peso, capacidade);
-
-                        Console.WriteLine($"\nA rota {origem} -- [{peso}] --> {destino} foi adicionada");
+                       if ( _sorl.AdicionarRota(origem, destino, peso, capacidade))
+                        {
+                            Console.WriteLine($"\nA rota {origem} -- [{peso}] --> {destino} foi adicionada");
+                        }
                         Console.ReadKey(true);
                         break;
 
