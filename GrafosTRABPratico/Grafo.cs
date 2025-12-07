@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -40,7 +41,27 @@ namespace GrafosTRABPratico
             _listaADJ = new Dictionary<Hub, List<Rota>>();
         }
 
-        
+        public Dictionary<Hub, List<Rota>> GetRotas
+        {
+            get { return _listaADJ; }
+        }
+
+        /// <summary>
+        /// Retorna objeto Hub por id
+        /// </summary>
+        /// <param name="id">id de pesquisa</param>
+        /// <returns></returns>
+        public Hub GetSourceByID(int id)
+        {
+            if(_hubs.TryGetValue(id, out Hub inicio)){
+                return inicio;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public void CarregarArquivo(string caminho)
         {
             try
