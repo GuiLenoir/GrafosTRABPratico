@@ -11,8 +11,15 @@ namespace GrafosTRABPratico
 
         //TEM QUE VERIFICAR PRA VER O QUE CADA ALGORTIMO REALMENTE VAI RETORNAR (SE RETORNA UM INT COM INFORMAÇÃO ESPECIFICA OU UMA STRING COM VÁRIAS INFORMAÇÕES POR EXEMPLO)
 
-        //AQUI VAI TER TODOS OS ALGORITMOS QUE A GENTE TALVEZ USE (DIJKSTRA E BELLMAN SÃO OS 2 PRA CAMINHO MINIMO, MAS DEPENDENDO DO GRAFO VAI VARIAR QUAL DOS DOIS VAI USAR)
-        public List<Hub> Dijkstra(Grafo grafo, int inicio, int destino)
+
+        /// <summary>
+        /// Método que implementa o algoritmo de Djksita para encontrar o roteamento de menor custo entra vertices
+        /// </summary>
+        /// <param name="grafo">Grafo</param>
+        /// <param name="inicio">Vertice de inicio</param>
+        /// <param name="destino">Vertice de destino</param>
+        /// <returns></returns>
+        public List<Hub> RoteamentoMenorCusto(Grafo grafo, int inicio, int destino)//Dijkstra
         {
             
             //Adiciona todas as rotas(o grafo em geral)

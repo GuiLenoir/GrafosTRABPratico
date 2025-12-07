@@ -106,7 +106,21 @@ namespace GrafosTRABPratico
                 switch (opcao)
                 {
                     case "1":
+                        Console.WriteLine($"Qual o hub (vertice) de origem?");
+                        int origem = int.Parse(Console.ReadLine());
 
+                        Console.WriteLine($"Qual o hub (vertice) de destino?");
+                        int destino = int.Parse(Console.ReadLine());
+
+                        List<Hub> roteamento = _sorl.Agoritmos.RoteamentoMenorCusto(_sorl.Grafo, origem, destino);
+
+                        Console.WriteLine($"O Rotemanto de menor custo entre o HUB {origem} e o HUB {destino} é passando por: ");
+                        foreach(Hub h in roteamento)
+                        {
+                            Console.Write($"{h.ID()} ");
+                        }
+                        Console.ReadKey();
+                        Console.WriteLine();
                         break;
 
                     case "2":
