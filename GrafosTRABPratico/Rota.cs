@@ -33,5 +33,10 @@ namespace GrafosTRABPratico
         {
             return _destino;
         }
+
+        public Hub GetOrigem()
+        {
+            return _origem;
+        }
     }
 }
