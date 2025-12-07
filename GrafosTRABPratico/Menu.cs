@@ -114,11 +114,16 @@ namespace GrafosTRABPratico
 
                         List<Hub> roteamento = _sorl.Agoritmos.RoteamentoMenorCusto(_sorl.Grafo, origem, destino);
 
-                        Console.WriteLine($"O Rotemanto de menor custo entre o HUB {origem} e o HUB {destino} é passando por: ");
-                        foreach(Hub h in roteamento)
+                        if (roteamento != null)
                         {
-                            Console.Write($"{h.ID()} ");
+                            Console.WriteLine($"O Rotemanto de menor custo entre o HUB {origem} e o HUB {destino} é passando por: ");
+                            foreach (Hub h in roteamento)
+                            {
+                                Console.Write($"{h.ID()} ");
+                            }
                         }
+
+                        
                         Console.ReadKey();
                         Console.WriteLine();
                         break;

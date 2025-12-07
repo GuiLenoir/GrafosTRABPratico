@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace GrafosTRABPratico
 {
-    public class Algoritmos 
+    public class Algoritmos
     {
 
         //TEM QUE VERIFICAR PRA VER O QUE CADA ALGORTIMO REALMENTE VAI RETORNAR (SE RETORNA UM INT COM INFORMAÇÃO ESPECIFICA OU UMA STRING COM VÁRIAS INFORMAÇÕES POR EXEMPLO)
@@ -21,21 +22,41 @@ namespace GrafosTRABPratico
         /// <returns></returns>
         public List<Hub> RoteamentoMenorCusto(Grafo grafo, int inicio, int destino)//Dijkstra
         {
-            
+
+
+
             //Adiciona todas as rotas(o grafo em geral)
             Dictionary<Hub, List<Rota>> Rotas = grafo.GetRotas;
 
             Hub source = grafo.GetSourceByID(inicio);//vertice inicio
             Hub final = grafo.GetSourceByID(destino);//vertice destino 
+                                                     //tratamento se colocar vertice que não existe
 
-            Dictionary<Hub,double> Distancias = new Dictionary<Hub,double>();//distancias dos vertices
+
+
+            try
+            {
+                if (source == null || final == null)
+                    throw new Exception("Vértice inicial ou final não existe no grafo.");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"ERRO: ({ex.Message})");
+                return null;
+            }
+
+
+
+
+
+            Dictionary<Hub, double> Distancias = new Dictionary<Hub, double>();//distancias dos vertices
 
             Dictionary<Hub, Hub> Predecessores = new Dictionary<Hub, Hub>();//predecessores dos vertices
 
             List<Hub> Visitados = new List<Hub>();//vertices ja visitados
 
             //Inicializar as distâncias, predecessores e visitados conforme o pseudocodigo
-            foreach (Hub vertice in Rotas.Keys )
+            foreach (Hub vertice in Rotas.Keys)
             {
                 Distancias[vertice] = double.MaxValue;
                 Predecessores[vertice] = null;
@@ -44,8 +65,8 @@ namespace GrafosTRABPratico
             Visitados.Add(source);//adiciona o source ao array de visitados
             Distancias[source] = 0;// inicia a distância da origem como 0
 
-            
-            for (int i = 1; i<= Rotas.Count - 1; i++)//execução do algoritmo
+
+            for (int i = 1; i <= Rotas.Count - 1; i++)//execução do algoritmo
             {
                 double menorDistancia = double.MaxValue;
                 Hub melhorOrigem = null;
@@ -53,18 +74,18 @@ namespace GrafosTRABPratico
 
 
                 //acha aresta com a menor distancia + peso
-                foreach(Hub vertice in Visitados)
+                foreach (Hub vertice in Visitados)
                 {
-                    foreach(Rota rota in Rotas[vertice])
+                    foreach (Rota rota in Rotas[vertice])
                     {
                         Hub w = rota.GetDestino();
-                        double peso =rota.GetPeso();
+                        double peso = rota.GetPeso();
 
                         if (!Visitados.Contains(w))
                         {
                             double valor = Distancias[vertice] + peso;
 
-                            if(valor < menorDistancia)
+                            if (valor < menorDistancia)
                             {
                                 menorDistancia = valor;
                                 melhorDestino = w;
@@ -73,6 +94,20 @@ namespace GrafosTRABPratico
                         }
                     }
                 }
+                try
+                {
+                    if (melhorDestino == null)
+                    {
+                        // Nenhuma aresta disponível → grafo desconexo
+                        throw new Exception($"Não existe caminho de {source.ID()} até {final.ID()}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"ERRO: ({ex.Message})");
+                    return null;
+                }
+
 
                 //Relaxamento 
 
@@ -81,13 +116,13 @@ namespace GrafosTRABPratico
 
                 Visitados.Add(melhorDestino);
 
-                if(melhorDestino == final)
+                if (melhorDestino == final)
                 {
                     i = Rotas.Count;
                 }
 
 
-                
+
             }
 
             //Construção da lista de caminho
