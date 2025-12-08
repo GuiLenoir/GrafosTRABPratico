@@ -143,42 +143,39 @@ namespace GrafosTRABPratico
 
         }
 
-        public void BellmanFord()
-        {
 
-        }
-
-        public void Kruskal()
-        {
-
-        }
+        /// <summary>
+        /// Algoritmo para encontrar A rota unica para todos os vértices AVG, implementa o algoritmo de prim
+        /// </summary>
+        /// <param name="grafo"></param>
+        /// <returns></returns>
         public Grafo RotaUnica(Grafo grafo)
         {
-            Hub raiz = grafo.GetSourceByID(1);
+            Hub raiz = grafo.GetSourceByID(1);//vértice raiz, por padrão o primeiro
 
-            Grafo AGM = new Grafo();
-            List<Hub> HubsAGM = new List<Hub>();
+            Grafo AGM = new Grafo();//cria o subgrafo da AGM
+            List<Hub> HubsAGM = new List<Hub>();//lista de hubs da agm usado para percorrer
 
-            Dictionary<Hub, List<Rota>> Rotas = grafo.GetRotas;
+            Dictionary<Hub, List<Rota>> Rotas = grafo.GetRotas;//rotas do grafo original
 
-            HubsAGM.Add(raiz);
-            AGM.AddVerticeEspecifico(raiz);
+            HubsAGM.Add(raiz);//add a raiz na lista de hubs
+            AGM.AddVerticeEspecifico(raiz);//add a raiz na AGM
 
 
             while(AGM.GetRotas.Count <= Rotas.Count)
             {
                 double menorCusto = double.MaxValue;
-                Rota melhorAresta = null;
+                Rota melhorAresta = null;//aresta a ser selecionada
                 Hub melhorOrigem = null;
                 Hub melhorDestino = null;
 
-                foreach(Hub v in HubsAGM)
+                foreach(Hub v in HubsAGM)//Percorre os hubs incluidos na AGM
                 {
-                    foreach(Rota rota in Rotas[v])
+                    foreach(Rota rota in Rotas[v])//Percorre as rotas do grafo original
                     {
                         Hub destino = rota.GetDestino();
 
-                        if (!HubsAGM.Contains(destino))
+                        if (!HubsAGM.Contains(destino))//se destino não estiver nos hubs da AGM fazemos a verificação de custo e adicionamos
                         {
                             if (rota.GetPeso() < menorCusto)
                             {
@@ -194,12 +191,18 @@ namespace GrafosTRABPratico
 
                 if(melhorAresta == null)
                 {
-                    return AGM;
+                    return AGM;//Se não ouver melhor aresta a execução termina
                 }
 
-                AGM.AddVerticeEspecifico(melhorDestino);
-                HubsAGM.Add(melhorDestino);
-                AGM.AddArestaPrim(melhorOrigem.ID(), melhorDestino.ID(), melhorAresta.GetPeso(), melhorAresta.GetCapacidade());
+                AGM.AddVerticeEspecifico(melhorDestino);//add destino na AVG
+                HubsAGM.Add(melhorDestino);//add destino na lista de hubs
+
+                if (!AGM.GetRotas.ContainsKey(melhorOrigem))//se não ouver o hub na lista de rotas da AGM ele cira
+                {
+                    AGM.AddHubRota(melhorOrigem);
+                }
+
+                AGM.AddAresta(melhorOrigem.ID(), melhorDestino.ID(), melhorAresta.GetPeso(), melhorAresta.GetCapacidade());//Adiciona a rota ao vértice
 
             }
 

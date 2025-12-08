@@ -137,7 +137,7 @@ namespace GrafosTRABPratico
 
         }
 
-
+        
 
 
 
@@ -227,6 +227,11 @@ namespace GrafosTRABPratico
             return h;
         }
 
+        /// <summary>
+        /// Adiciona vértice passando um vértice por parâmetro, usado nos algoritmos
+        /// </summary>
+        /// <param name="h">Vértice a ser adicionado</param>
+        /// <returns></returns>
         public Hub AddVerticeEspecifico(Hub h)
         {
             //adiciona um vertice no dicionario hub a partir de um vértice já criado
@@ -299,85 +304,39 @@ namespace GrafosTRABPratico
             return rota;
         }
 
-        private Rota CarregarArestaPrim(int verticeOrigem, int verticeDestino, double peso, double capacidade)
+
+        /// <summary>
+        /// Adiciona um Hub a lista de rotas
+        /// </summary>
+        /// <param name="origem">Objeto para ser adicionado</param>
+        public void AddHubRota(Hub origem)
         {
-            //pega os vertices baseado no que foi falado no dimacs
-            Hub origem = _hubs[verticeOrigem];
-            Hub destino = _hubs[verticeDestino];
-
-            Rota rota = new Rota(origem, destino, peso, capacidade);
-
-            //se for matriz adiciona na matriz, se for lista adiciona na lista
-
-
-            if (_tipoRepresentacao == "matriz")
-            {
-                
-                _matrizADJ[verticeOrigem - 1, verticeDestino - 1] = rota;
-            }
-            else
-            {
-                if (!_listaADJ.ContainsKey(origem))
-                {
-                    _listaADJ.Add(origem, new List<Rota>());
-                }
-                
-                _listaADJ[_hubs[origem.ID()]].Add(rota);
-            }
-
-            _qntdAresta++;
-            return rota;
+            _listaADJ.Add(origem, new List<Rota>());
         }
 
 
-        public bool AddArestaPrim(int verticeOrigem, int verticeDestino, double peso, double capacidade)
-        {
-            //try { 
-            //    Rota rota = CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
-
-            //    MudouRepresentacao();
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.Error.WriteLine("ERRO!: Uma das rotas fornecidas não está presente no grafo.\n");
-            //    Console.Error.WriteLine($"Erro: ({ex.Message})");
-            //    return false;
-            //}
-
-            Rota rota = CarregarArestaPrim(verticeOrigem, verticeDestino, peso, capacidade);
-
-            //MudouRepresentacao();
-
-            return true;
-        }
-        /*public Rota CriaArestaPorHub(Hub verticeOrigem, Hub verticeDestino, double peso, double capacidade)
-        {
-
-
-            Rota rota = new Rota(verticeOrigem, verticeDestino, peso, capacidade);
-            _listaADJ[_hubs[verticeOrigem.ID()]].Add(rota);
-            _qntdAresta++;
-            return rota;
-        }*/
-
-        //ESSE METODO É PRA COLOCAR A ARESTA AUMENTANDO NO CONTADOR
+        /// <summary>
+        /// Adiciona uma aresta(rota) a lista de arestas (Grafo)
+        /// </summary>
+        /// <param name="verticeOrigem"></param>
+        /// <param name="verticeDestino"></param>
+        /// <param name="peso"></param>
+        /// <param name="capacidade"></param>
+        /// <returns></returns>
         public bool AddAresta(int verticeOrigem, int verticeDestino, double peso, double capacidade)
         {
-            //try { 
-            //    Rota rota = CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
-                
-            //    MudouRepresentacao();
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.Error.WriteLine("ERRO!: Uma das rotas fornecidas não está presente no grafo.\n");
-            //    Console.Error.WriteLine($"Erro: ({ex.Message})");
-            //    return false;
-            //}
+            try
+            {
+                Rota rota = CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
 
-            Rota rota = CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
-
-            MudouRepresentacao();
+                MudouRepresentacao();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("ERRO!: Uma das rotas fornecidas não está presente no grafo.\n");
+                Console.Error.WriteLine($"Erro: ({ex.Message})");
+                return false;
+            }
 
             return true;
         }
