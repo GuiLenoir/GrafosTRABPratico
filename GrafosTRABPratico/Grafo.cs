@@ -46,6 +46,12 @@ namespace GrafosTRABPratico
             get { return _listaADJ; }
         }
 
+        public Dictionary<int, Hub> GetHubs
+        {
+            get { return _hubs; }
+            set { _hubs = value; }
+        }
+
         /// <summary>
         /// Retorna objeto Hub por id
         /// </summary>
@@ -220,6 +226,15 @@ namespace GrafosTRABPratico
 
             return h;
         }
+
+        public Hub AddVerticeEspecifico(Hub h)
+        {
+            //adiciona um vertice no dicionario hub a partir de um vértice já criado
+            _hubs.Add(h.ID(), h);
+            _qntdVertice++;
+
+            return h;
+        }
         public void AddVertice()
         {
             
@@ -284,20 +299,85 @@ namespace GrafosTRABPratico
             return rota;
         }
 
+        private Rota CarregarArestaPrim(int verticeOrigem, int verticeDestino, double peso, double capacidade)
+        {
+            //pega os vertices baseado no que foi falado no dimacs
+            Hub origem = _hubs[verticeOrigem];
+            Hub destino = _hubs[verticeDestino];
+
+            Rota rota = new Rota(origem, destino, peso, capacidade);
+
+            //se for matriz adiciona na matriz, se for lista adiciona na lista
+
+
+            if (_tipoRepresentacao == "matriz")
+            {
+                
+                _matrizADJ[verticeOrigem - 1, verticeDestino - 1] = rota;
+            }
+            else
+            {
+                if (!_listaADJ.ContainsKey(origem))
+                {
+                    _listaADJ.Add(origem, new List<Rota>());
+                }
+                
+                _listaADJ[_hubs[origem.ID()]].Add(rota);
+            }
+
+            _qntdAresta++;
+            return rota;
+        }
+
+
+        public bool AddArestaPrim(int verticeOrigem, int verticeDestino, double peso, double capacidade)
+        {
+            //try { 
+            //    Rota rota = CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
+
+            //    MudouRepresentacao();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.Error.WriteLine("ERRO!: Uma das rotas fornecidas não está presente no grafo.\n");
+            //    Console.Error.WriteLine($"Erro: ({ex.Message})");
+            //    return false;
+            //}
+
+            Rota rota = CarregarArestaPrim(verticeOrigem, verticeDestino, peso, capacidade);
+
+            //MudouRepresentacao();
+
+            return true;
+        }
+        /*public Rota CriaArestaPorHub(Hub verticeOrigem, Hub verticeDestino, double peso, double capacidade)
+        {
+
+
+            Rota rota = new Rota(verticeOrigem, verticeDestino, peso, capacidade);
+            _listaADJ[_hubs[verticeOrigem.ID()]].Add(rota);
+            _qntdAresta++;
+            return rota;
+        }*/
+
         //ESSE METODO É PRA COLOCAR A ARESTA AUMENTANDO NO CONTADOR
         public bool AddAresta(int verticeOrigem, int verticeDestino, double peso, double capacidade)
         {
-            try { 
-           Rota rota = CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
-           
-           MudouRepresentacao();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine("ERRO!: Uma das rotas fornecidas não está presente no grafo.\n");
-                Console.Error.WriteLine($"Erro: ({ex.Message})");
-                return false;
-            }
+            //try { 
+            //    Rota rota = CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
+                
+            //    MudouRepresentacao();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.Error.WriteLine("ERRO!: Uma das rotas fornecidas não está presente no grafo.\n");
+            //    Console.Error.WriteLine($"Erro: ({ex.Message})");
+            //    return false;
+            //}
+
+            Rota rota = CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
+
+            MudouRepresentacao();
 
             return true;
         }

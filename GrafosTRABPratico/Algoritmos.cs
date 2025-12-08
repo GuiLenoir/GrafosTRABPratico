@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GrafosTRABPratico
@@ -151,10 +152,60 @@ namespace GrafosTRABPratico
         {
 
         }
-        public void Prim()
+        public Grafo RotaUnica(Grafo grafo)
         {
+            Hub raiz = grafo.GetSourceByID(1);
 
+            Grafo AGM = new Grafo();
+            List<Hub> HubsAGM = new List<Hub>();
+
+            Dictionary<Hub, List<Rota>> Rotas = grafo.GetRotas;
+
+            HubsAGM.Add(raiz);
+            AGM.AddVerticeEspecifico(raiz);
+
+
+            while(AGM.GetRotas.Count <= Rotas.Count)
+            {
+                double menorCusto = double.MaxValue;
+                Rota melhorAresta = null;
+                Hub melhorOrigem = null;
+                Hub melhorDestino = null;
+
+                foreach(Hub v in HubsAGM)
+                {
+                    foreach(Rota rota in Rotas[v])
+                    {
+                        Hub destino = rota.GetDestino();
+
+                        if (!HubsAGM.Contains(destino))
+                        {
+                            if (rota.GetPeso() < menorCusto)
+                            {
+                                menorCusto = rota.GetPeso();
+                                melhorAresta = rota;
+                                melhorOrigem = v;
+                                melhorDestino = destino;
+                                
+                            }
+                        }
+                    }
+                }
+
+                if(melhorAresta == null)
+                {
+                    return AGM;
+                }
+
+                AGM.AddVerticeEspecifico(melhorDestino);
+                HubsAGM.Add(melhorDestino);
+                AGM.AddArestaPrim(melhorOrigem.ID(), melhorDestino.ID(), melhorAresta.GetPeso(), melhorAresta.GetCapacidade());
+
+            }
+
+            return AGM;
         }
+
         //tem que ver qual vai usar pra coloração (botei nome generico)
         public void Coloracao()
         {

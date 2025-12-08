@@ -138,6 +138,12 @@ namespace GrafosTRABPratico
                         break;
 
                     case "5":
+                        Console.WriteLine("A Rota Única de Inspeção é: ");
+                        Grafo RotaUnica = _sorl.Agoritmos.RotaUnica(_sorl.Grafo);
+                       
+                        RotaUnica.VisualizarGrafo();
+                        Console.ReadKey();
+                        Console.WriteLine();
                         break;
 
                     case "0":

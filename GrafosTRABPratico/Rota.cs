@@ -28,7 +28,12 @@ namespace GrafosTRABPratico
         {
             return _peso;
         }
-        
+
+        public double GetCapacidade()
+        {
+            return _capacidade;
+        }
+
         public Hub GetDestino()
         {
             return _destino;
