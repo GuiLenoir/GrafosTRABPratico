@@ -129,21 +129,38 @@ namespace GrafosTRABPratico
                         break;
 
                     case "2":
+
                         break;
 
                     case "3":
+                        Console.WriteLine("A Solução ótima para expansão é: ");
+                        Grafo RotaUnica = _sorl.Agoritmos.RotaUnica(_sorl.Grafo);
+
+                        RotaUnica.VisualizarGrafo();
+                        Console.ReadKey();
+                        Console.WriteLine();
                         break;
 
                     case "4":
                         break;
 
                     case "5":
-                        Console.WriteLine("A Rota Única de Inspeção é: ");
-                        Grafo RotaUnica = _sorl.Agoritmos.RotaUnica(_sorl.Grafo);
-                       
-                        RotaUnica.VisualizarGrafo();
-                        Console.ReadKey();
-                        Console.WriteLine();
+                        Console.WriteLine("As rotas únicas de inspeção são");
+                        Console.WriteLine("Visitando todas os Hubs uma única vez:");
+                        List<Hub> caminhoHamiltoniano = _sorl.Agoritmos.CircuitoHamiltoniano(_sorl.Grafo);
+                        if (caminhoHamiltoniano != null)
+                        {
+                            foreach (Hub h in caminhoHamiltoniano)
+                            {
+                                Console.Write($"{h.ID()} ");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("CICLO DETECTADO: não existe Rota única");
+                        }
+
+                        Console.ReadKey(true);
                         break;
 
                     case "0":

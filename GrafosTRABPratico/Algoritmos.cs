@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -219,9 +220,63 @@ namespace GrafosTRABPratico
         {
 
         }
-        public void CircuitoHamiltoniano()
+        public List<Hub> CircuitoHamiltoniano(Grafo grafo)
         {
+            Dictionary<Hub, List<Rota>> Rotas = grafo.GetRotas;
+            Dictionary<Hub, int> Marcas = new Dictionary<Hub, int>();
 
+            bool isCicle = false;
+
+            foreach(Hub hub in Rotas.Keys)
+            {
+                Marcas[hub] = 0;
+            }
+
+            List<Hub> OrdenacaoTopologica = new List<Hub>();
+
+            foreach(Hub hub in Rotas.Keys)
+            {
+                if (Marcas[hub] == 0 && isCicle == false)
+                {
+                    isCicle = Visitar(hub, Rotas, Marcas, OrdenacaoTopologica);
+                }else if(isCicle == true)
+                {
+                    break;
+                }
+            }
+            if (isCicle == true)
+            {
+                OrdenacaoTopologica = null;
+            }
+            return OrdenacaoTopologica;
+        }
+
+        private bool Visitar(Hub hub, Dictionary<Hub, List<Rota>> Rotas, Dictionary<Hub, int> Marcas, List<Hub> OrdenacaoTopologica)
+        {
+            if (Marcas[hub] != 2)
+            {
+                if (Marcas[hub] == 1)
+                {
+                    Console.WriteLine("CICLO DETECTADO: não existe ordenação topológica.");
+                    return true;
+                }
+
+                Marcas[hub] = 1;
+
+
+                foreach(Rota rota in Rotas[hub])
+                {
+                    Hub destino = rota.GetDestino();
+                    Visitar(destino, Rotas, Marcas, OrdenacaoTopologica);
+                }
+
+
+                Marcas[hub] = 2;
+
+                OrdenacaoTopologica.Insert(0,hub);
+            }
+
+            return false;
         }
         //talvez ainda precise de mais
     }
