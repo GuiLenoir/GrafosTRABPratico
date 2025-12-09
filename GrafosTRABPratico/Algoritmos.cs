@@ -210,10 +210,101 @@ namespace GrafosTRABPratico
             return AGM;
         }
 
-        //tem que ver qual vai usar pra coloração (botei nome generico)
-        public void Coloracao()
-        {
 
+        /// <summary>
+        /// Método de implementação do algoritmo de vizing para coloração de arestas (rotas)
+        /// </summary>
+        /// <param name="grafo">Grafo a ser analizado</param>
+        /// <returns>Dicionário com cada rota e sua respectiva cor </returns>
+        public Dictionary<Rota, int> AgendamentoManutencoes(Grafo grafo)
+        {
+            //Pega todas arestas
+            List<Rota> arestas = new List<Rota>();
+
+            foreach (var rota in grafo.GetRotas)
+            {
+                arestas.AddRange(rota.Value);
+            }
+
+            //Dicionário para cores por aresta
+            Dictionary<Rota, int> cores = new Dictionary<Rota, int>();
+               
+            //grau máximo do grafo
+            int grauMaximo = grafo.GetHubs.Values.Max(h => Grau(grafo, h));
+
+            //Máximo de cores que o grafo pode ter
+            int maxCores = grauMaximo + 1;
+
+            //Percorre as arestas para colori-las
+            foreach (var aresta in arestas)
+            {
+                // Conjunto de cores já usadas por arestas adjacentes
+                HashSet<int> coresAdj = new HashSet<int>();
+
+
+                foreach (var rota in arestas)
+                {
+                    //Verifica adjacencia
+                    if (!Object.ReferenceEquals(rota, aresta))
+                    {
+                        bool adjacentes =
+                            rota.GetOrigem() == aresta.GetOrigem() ||
+                            rota.GetOrigem() == aresta.GetDestino() ||
+                            rota.GetDestino() == aresta.GetOrigem() ||
+                            rota.GetDestino() == aresta.GetDestino();
+
+                        if (adjacentes && cores.ContainsKey(rota))
+                        {
+                            coresAdj.Add(cores[rota]);
+                        }
+                    }
+                }
+
+                //Melhor cor disponivel
+                int corEscolhida = Enumerable.Range(1, maxCores)
+                                     .First(c => !coresAdj.Contains(c));
+
+                //Adicina a cor
+                cores[aresta] = corEscolhida;
+            }
+
+            return cores;
+        }
+
+        /// <summary>
+        /// Método para olhar grau do vértice
+        /// </summary>
+        /// <param name="g"></param>
+        /// <param name="h"></param>
+        /// <returns>Grau do vértice</returns>
+        private int Grau(Grafo g ,Hub h)
+        {
+            if (g.GetRotas.ContainsKey(h))
+                return g.GetRotas[h].Count;
+            return 0;
+        }
+
+        private bool Adjacente(Grafo g, Hub h1, Hub h2)
+        {
+            if (g.GetRotas.ContainsKey(h1))
+            {
+                foreach (Rota rota in g.GetRotas[h1])
+                {
+                    if (rota.GetDestino() == h2 || rota.GetOrigem() == h2)
+                        return true;
+                }
+            }
+
+            if (g.GetRotas.ContainsKey(h2))
+            {
+                foreach (Rota rota in g.GetRotas[h2])
+                {
+                    if (rota.GetDestino() == h1 || rota.GetOrigem() == h1)
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         public void CircuitoEuleriano()
