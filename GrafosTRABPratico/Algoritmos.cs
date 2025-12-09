@@ -163,16 +163,16 @@ namespace GrafosTRABPratico
             AGM.AddVerticeEspecifico(raiz);//add a raiz na AGM
 
 
-            while(AGM.GetRotas.Count <= Rotas.Count)
+            while (AGM.GetRotas.Count <= Rotas.Count)
             {
                 double menorCusto = double.MaxValue;
                 Rota melhorAresta = null;//aresta a ser selecionada
                 Hub melhorOrigem = null;
                 Hub melhorDestino = null;
 
-                foreach(Hub v in HubsAGM)//Percorre os hubs incluidos na AGM
+                foreach (Hub v in HubsAGM)//Percorre os hubs incluidos na AGM
                 {
-                    foreach(Rota rota in Rotas[v])//Percorre as rotas do grafo original
+                    foreach (Rota rota in Rotas[v])//Percorre as rotas do grafo original
                     {
                         Hub destino = rota.GetDestino();
 
@@ -184,13 +184,13 @@ namespace GrafosTRABPratico
                                 melhorAresta = rota;
                                 melhorOrigem = v;
                                 melhorDestino = destino;
-                                
+
                             }
                         }
                     }
                 }
 
-                if(melhorAresta == null)
+                if (melhorAresta == null)
                 {
                     return AGM;//Se não ouver melhor aresta a execução termina
                 }
@@ -216,6 +216,244 @@ namespace GrafosTRABPratico
 
         }
 
+
+        /// <summary>
+        /// Algoritmo de Edmonds-Karp para calcular o fluxo máximo entre dois vértices.
+        /// </summary>
+        public string FluxoMaximoMinimoCorte(Grafo grafo, int origemID, int destinoID)
+        {
+
+            Hub origemHub = grafo.GetSourceByID(origemID); //vertice de origem
+            Hub destinoHub = grafo.GetSourceByID(destinoID); //vertice de destino
+            try { 
+            if (origemHub == null || destinoHub == null)
+            {
+                throw new ArgumentException("Origem ou destino não existem no grafo."); //tratamento de vertices não existentes
+                
+            }
+            }
+            catch(Exception ex)
+            {
+                Console.Error.WriteLine($"ERRO ({ex.Message})");
+                Console.Error.WriteLine(ex.ToString());
+                return null;
+            }
+            Dictionary<Hub, List<Rota>> listaADJ = grafo.GetRotas; //obtem a lista de adjacencia do grafo
+
+            
+            Dictionary<(Hub, Hub), Rota> mapaArestas = new Dictionary<(Hub, Hub), Rota>(); //cria um mapa de arestas que mapeia cada par de vertices (origem, destino) pra sua aresta, facilita pra ver se uma aresta é direta
+            //(hub, hub) = tupla, chave composta por dois objetos
+
+            // 1. Inicializar fluxo f(e) = 0 para toda aresta
+            foreach (KeyValuePair<Hub, List<Rota>> par in listaADJ)
+            {
+                Hub verticeOrigem = par.Key; //vertice atual
+                foreach (Rota rota in par.Value) //vai percorrer cada aresta que sai desse vértice
+                {
+                    Hub verticeDestino = rota.GetDestino(); 
+                    mapaArestas[(verticeOrigem, verticeDestino)] = rota; // salva a aresta no mapa com a chave tupla (origem, destino)
+                    rota.MudarFluxo(0.0); // fluxo inicial = 0
+                }
+            }
+
+            // 2. Construir rede residual G’(f)
+            Dictionary<Hub, Dictionary<Hub, double>> redeResidual = new Dictionary<Hub, Dictionary<Hub, double>>(); //cria a rede residual
+            //primeiro dicionario = vertices do grafo
+            //segundo dicionario dentro do primeiro = vizinhos desse vertice
+            //double é a capacidade residual entre dois vertices
+
+            //se o vertice ainda nao foi adicionado a rede residual, adiciona ele como um dicionario
+            void GarantirVerticeResidual(Hub vertice) //garante que cada vertice realmente vai existir na rede residual
+            {
+                if (!redeResidual.ContainsKey(vertice))
+                    redeResidual[vertice] = new Dictionary<Hub, double>(); //pra cada vertice, guarda um dicionario pros seus vizinhos
+                
+            }
+
+            //inicializa a rede residual a partir das capacidades originais dos vertices
+            foreach (KeyValuePair<Hub, List<Rota>> par in listaADJ)
+            {
+                Hub verticeOrigem = par.Key;
+                GarantirVerticeResidual(verticeOrigem);
+
+                foreach (Rota rota in par.Value)
+                {
+                    Hub verticeDestino = rota.GetDestino();
+                    GarantirVerticeResidual(verticeDestino);
+
+                    //capacidade direta é capacidade original
+                    redeResidual[verticeOrigem][verticeDestino] = rota.GetCapacidade(); // capacidade original
+
+                    //se for reversa é 0
+                    if (!redeResidual[verticeDestino].ContainsKey(verticeOrigem))
+                        redeResidual[verticeDestino][verticeOrigem] = 0.0; // reversa começa com 0
+                }
+            }
+
+            double fluxoMaximo = 0.0;
+
+            // 3. Enquanto existir caminho aumentante P em G’(f)
+            while (true)
+            {
+                // a. Encontrar caminho aumentante com BFS
+                Dictionary<Hub, Hub> predecessores = new Dictionary<Hub, Hub>(); //reconstruir o caminho
+                HashSet<Hub> visitados = new HashSet<Hub>();
+                Queue<Hub> fila = new Queue<Hub>();
+
+                visitados.Add(origemHub);
+                fila.Enqueue(origemHub);
+
+                while (fila.Count > 0)
+                {
+                    Hub verticeAtual = fila.Dequeue();
+
+                    //percorre pelos vizinhos na rede residual
+                    foreach (KeyValuePair<Hub, double> vizinho in redeResidual[verticeAtual])
+                    {
+                        Hub verticeVizinho = vizinho.Key;
+                        double capacidadeResidual = vizinho.Value;
+
+                        //só avança se a capacidade residual for > 0 e ainda nao for visitado
+                        if (capacidadeResidual > 0 && !visitados.Contains(verticeVizinho))
+                        {
+                            visitados.Add(verticeVizinho);
+                            predecessores[verticeVizinho] = verticeAtual;
+
+                            //chegou ao destino
+                            if (verticeVizinho.Equals(destinoHub))
+                            {
+                                fila.Clear(); // encerra BFS
+                                break;
+                            }
+                            fila.Enqueue(verticeVizinho);
+                        }
+                    }
+                }
+
+                //se nao encontrou destino
+                if (!visitados.Contains(destinoHub))
+                    break; // não existe mais caminho aumentante
+
+                // b. Δ = min { ur(e) | e ∈ P }
+                // Δ = gargalo
+                //encontrar a menor capacidade residual (gargalo)
+                double gargalo = double.MaxValue;
+                Hub verticeCaminho = destinoHub;
+                while (!verticeCaminho.Equals(origemHub))
+                {
+                    Hub verticeAnterior = predecessores[verticeCaminho];
+                    gargalo = Math.Min(gargalo, redeResidual[verticeAnterior][verticeCaminho]);
+                    verticeCaminho = verticeAnterior;
+                }
+
+                // c. Atualizar fluxo e rede residual ao longo do caminho
+                verticeCaminho = destinoHub;
+                while (!verticeCaminho.Equals(origemHub))
+                {
+                    Hub verticeAnterior = predecessores[verticeCaminho];
+
+                    // i. Se (v,w) for direta → f(v,w) = f(v,w) + Δ
+                    //se aresta (verticeAnterior -> verticeCaminho) é uma aresta que tem no grafo original
+                    //aumenta o fluxo dessa aresta em (gargalo)
+                    if (mapaArestas.TryGetValue((verticeAnterior, verticeCaminho), out Rota rotaDireta))
+                    {
+                        rotaDireta.MudarFluxo(rotaDireta.GetFluxo() + gargalo);
+                    }
+
+                    // ii. Senão → f(w,v) = f(w,v) – Δ
+                    //senão, aresta reversa
+                    //diminui o fluxo em (gargalo)
+                    else if (mapaArestas.TryGetValue((verticeCaminho, verticeAnterior), out Rota rotaReversa))
+                    {
+                        rotaReversa.MudarFluxo(rotaReversa.GetFluxo() - gargalo);
+                    }
+
+                    // d. Atualizar rede residual
+                    //atualiza a rede, diminuindo a capacidade na direção direta e aumentando na direção reversa
+                    redeResidual[verticeAnterior][verticeCaminho] -= gargalo;
+                    redeResidual[verticeCaminho][verticeAnterior] += gargalo;
+
+                    verticeCaminho = verticeAnterior; //avança
+                }
+
+                fluxoMaximo += gargalo; //atualiza o fluxomaximo toda vez que muda
+            }
+
+            //corte minimo
+            // Conjunto S = vértices alcançáveis a partir da origem na rede residual final
+            HashSet<Hub> verticesAlcancaveis = new HashSet<Hub>();
+            //fila pra bfs
+            Queue<Hub> filaBusca = new Queue<Hub>();
+
+            //começa pela origem
+            filaBusca.Enqueue(origemHub);
+            verticesAlcancaveis.Add(origemHub);
+
+            //bfs pra encontrar todos os vertices alcançaveis
+            while (filaBusca.Count > 0)
+            {
+                Hub verticeAtual = filaBusca.Dequeue();
+
+                //percorre todos os vizinhos de verticeAtual na rede residual
+                foreach (KeyValuePair<Hub, double> vizinhoResidual in redeResidual[verticeAtual])
+                {
+                    Hub verticeVizinho = vizinhoResidual.Key;
+                    double capacidadeResidual = vizinhoResidual.Value;
+
+                    //só segue se a capacidade residual for maior que 0 (se o fluxo ainda pode passar) e se o vertice ainda nao foi visitado
+                    if (capacidadeResidual > 0 && !verticesAlcancaveis.Contains(verticeVizinho))
+                    {
+                        verticesAlcancaveis.Add(verticeVizinho);
+                        filaBusca.Enqueue(verticeVizinho);
+                    }
+                }
+            }
+
+            // Conjunto T = vértices não alcançáveis
+            List<Rota> arestasCorteMinimo = new List<Rota>();
+
+            //percorre todas as arestas do grafo original
+            foreach (KeyValuePair<Hub, List<Rota>> par in listaADJ)
+            {
+                Hub verticeOrigem = par.Key;
+                foreach (Rota rota in par.Value)
+                {
+                    Hub verticeDestino = rota.GetDestino();
+                    // Aresta cruza de S para T
+                    //faz parte do corte minimo se vertice de origem está em verticesAlcancaveis
+                    //e o de destino não está
+                    //capacidade original = 0
+                    if (verticesAlcancaveis.Contains(verticeOrigem) && !verticesAlcancaveis.Contains(verticeDestino) && rota.GetCapacidade() > 0)
+                    {
+                        arestasCorteMinimo.Add(rota);
+                    }
+                }
+            }
+
+
+            // monta a string de resultado
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"\nFluxo Máximo: {fluxoMaximo}");
+            sb.AppendLine($"\nCorte mínimo");
+
+            foreach (Rota aresta in arestasCorteMinimo)
+            {
+                sb.AppendLine($"({aresta.GetOrigem().ID()} -> {aresta.GetDestino().ID()}) | [CAPACIDADE: {aresta.GetCapacidade()}]");
+            }
+            if (arestasCorteMinimo.Count == 0)
+            {
+                sb.AppendLine($"(NÃO POSSUI CORTE MÍNIMO)");
+            }
+
+            return sb.ToString();
+        }
+
+
+
+
+
+
+
         public void CircuitoEuleriano()
         {
 
@@ -227,19 +465,20 @@ namespace GrafosTRABPratico
 
             bool isCicle = false;
 
-            foreach(Hub hub in Rotas.Keys)
+            foreach (Hub hub in Rotas.Keys)
             {
                 Marcas[hub] = 0;
             }
 
             List<Hub> OrdenacaoTopologica = new List<Hub>();
 
-            foreach(Hub hub in Rotas.Keys)
+            foreach (Hub hub in Rotas.Keys)
             {
                 if (Marcas[hub] == 0 && isCicle == false)
                 {
                     isCicle = Visitar(hub, Rotas, Marcas, OrdenacaoTopologica);
-                }else if(isCicle == true)
+                }
+                else if (isCicle == true)
                 {
                     break;
                 }
@@ -264,7 +503,7 @@ namespace GrafosTRABPratico
                 Marcas[hub] = 1;
 
 
-                foreach(Rota rota in Rotas[hub])
+                foreach (Rota rota in Rotas[hub])
                 {
                     Hub destino = rota.GetDestino();
                     Visitar(destino, Rotas, Marcas, OrdenacaoTopologica);
@@ -273,7 +512,7 @@ namespace GrafosTRABPratico
 
                 Marcas[hub] = 2;
 
-                OrdenacaoTopologica.Insert(0,hub);
+                OrdenacaoTopologica.Insert(0, hub);
             }
 
             return false;

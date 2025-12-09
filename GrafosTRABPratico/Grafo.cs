@@ -52,6 +52,16 @@ namespace GrafosTRABPratico
             set { _hubs = value; }
         }
 
+        public List<Rota> GetVizinhos(Hub vertice)
+        {
+            List<Rota> vizinhos = new List<Rota>();
+            foreach (Rota rota in _listaADJ[vertice])
+            {
+                vizinhos.Add(rota);
+            }
+            return vizinhos;
+        }
+
         /// <summary>
         /// Retorna objeto Hub por id
         /// </summary>
@@ -201,7 +211,7 @@ namespace GrafosTRABPratico
 
                     foreach (Rota rota in rotas.Value)
                     {
-                        Console.Write($"[{rota.GetDestino().ID()}, {rota.GetPeso()}] ");
+                        Console.Write($"[(DESTINO:{rota.GetDestino().ID()}), (PESO:{rota.GetPeso()}), (CAPACIDADE:{rota.GetCapacidade()})] ");
                     }
 
                     Console.WriteLine();

@@ -129,7 +129,19 @@ namespace GrafosTRABPratico
                         break;
 
                     case "2":
+                        Console.WriteLine($"Qual o hub (vertice) de origem?");
+                        int origem2 = int.Parse(Console.ReadLine());
 
+                        Console.WriteLine($"Qual o hub (vertice) de destino?");
+                        int destino2 = int.Parse(Console.ReadLine());
+
+                        string resultado = _sorl.Agoritmos.FluxoMaximoMinimoCorte(_sorl.Grafo, origem2, destino2);
+
+                        if (resultado != null)
+                        {
+                            Console.WriteLine(resultado);
+                        }
+                        Console.ReadKey(true);
                         break;
 
                     case "3":
