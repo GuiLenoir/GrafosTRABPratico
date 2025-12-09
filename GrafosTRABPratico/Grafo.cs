@@ -488,5 +488,42 @@ namespace GrafosTRABPratico
         {
             return _qntdVertice;
         }
+
+        public string GetTipoRepresentacao()
+        {
+            return _tipoRepresentacao;
+        }
+        public Dictionary<Hub, List<Rota>> GetMatrizPraLista()
+        {
+
+
+            // inicializa lista
+            Dictionary<Hub, List<Rota>> listaADJ = InicializarLista();
+
+
+            int linhas = _matrizADJ.GetLength(0); // número de linhas
+            int colunas = _matrizADJ.GetLength(1); // número de colunas
+
+
+
+            // percorre matriz
+            for (int i = 0; i < linhas; i++)
+            {
+                for (int j = 0; j < colunas; j++)
+                {
+                    Rota rota = _matrizADJ[i, j];
+
+                    if (rota != null)
+                    {
+                        Hub origem = _hubs[i + 1];
+                        listaADJ[origem].Add(rota);
+                    }
+                }
+            }
+
+
+            // substitui
+            return listaADJ;
+        }
     }
 }

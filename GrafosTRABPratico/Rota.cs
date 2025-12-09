@@ -27,10 +27,7 @@ namespace GrafosTRABPratico
             _capacidade = capacidade;
         }
 
-        public bool ÉDireta()
-        {
-            return _direta;
-        }
+
 
         public double GetPeso()
         {
@@ -51,10 +48,7 @@ namespace GrafosTRABPratico
             return _capacidade;
         }
 
-        public double CalcularCapacidadeResidual()
-        {
-            return ÉDireta() ? _capacidade - _fluxo : _fluxo;
-        }
+
 
         public Hub GetDestino()
         {

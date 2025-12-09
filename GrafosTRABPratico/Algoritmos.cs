@@ -24,11 +24,15 @@ namespace GrafosTRABPratico
         /// <returns></returns>
         public List<Hub> RoteamentoMenorCusto(Grafo grafo, int inicio, int destino)//Dijkstra
         {
-
-
-
-            //Adiciona todas as rotas(o grafo em geral)
-            Dictionary<Hub, List<Rota>> Rotas = grafo.GetRotas;
+            Dictionary<Hub, List<Rota>> Rotas;
+            if (grafo.GetTipoRepresentacao() == "matriz")
+            {             
+                Rotas = grafo.GetMatrizPraLista();
+            }
+            else
+            {
+                Rotas = grafo.GetRotas;
+            }
 
             Hub source = grafo.GetSourceByID(inicio);//vertice inicio
             Hub final = grafo.GetSourceByID(destino);//vertice destino 
@@ -157,7 +161,15 @@ namespace GrafosTRABPratico
             Grafo AGM = new Grafo();//cria o subgrafo da AGM
             List<Hub> HubsAGM = new List<Hub>();//lista de hubs da agm usado para percorrer
 
-            Dictionary<Hub, List<Rota>> Rotas = grafo.GetRotas;//rotas do grafo original
+            Dictionary<Hub, List<Rota>> Rotas;
+            if (grafo.GetTipoRepresentacao() == "matriz")
+            {
+                Rotas = grafo.GetMatrizPraLista();
+            }
+            else
+            {
+                Rotas = grafo.GetRotas;
+            }
 
             HubsAGM.Add(raiz);//add a raiz na lista de hubs
             AGM.AddVerticeEspecifico(raiz);//add a raiz na AGM
@@ -221,7 +233,17 @@ namespace GrafosTRABPratico
             //Pega todas arestas
             List<Rota> arestas = new List<Rota>();
 
-            foreach (var rota in grafo.GetRotas)
+            Dictionary<Hub, List<Rota>> Rotas;
+            if (grafo.GetTipoRepresentacao() == "matriz")
+            {
+                Rotas = grafo.GetMatrizPraLista();
+            }
+            else
+            {
+                Rotas = grafo.GetRotas;
+            }
+
+            foreach (KeyValuePair<Hub, List<Rota>> rota in Rotas)
             {
                 arestas.AddRange(rota.Value);
             }
@@ -262,7 +284,7 @@ namespace GrafosTRABPratico
 
                 //Melhor cor disponivel
                 int corEscolhida = Enumerable.Range(1, maxCores)
-                                     .First(c => !coresAdj.Contains(c));
+                                     .FirstOrDefault(c => !coresAdj.Contains(c));
 
                 //Adicina a cor
                 cores[aresta] = corEscolhida;
@@ -282,29 +304,6 @@ namespace GrafosTRABPratico
             if (g.GetRotas.ContainsKey(h))
                 return g.GetRotas[h].Count;
             return 0;
-        }
-
-        private bool Adjacente(Grafo g, Hub h1, Hub h2)
-        {
-            if (g.GetRotas.ContainsKey(h1))
-            {
-                foreach (Rota rota in g.GetRotas[h1])
-                {
-                    if (rota.GetDestino() == h2 || rota.GetOrigem() == h2)
-                        return true;
-                }
-            }
-
-            if (g.GetRotas.ContainsKey(h2))
-            {
-                foreach (Rota rota in g.GetRotas[h2])
-                {
-                    if (rota.GetDestino() == h1 || rota.GetOrigem() == h1)
-                        return true;
-                }
-            }
-
-            return false;
         }
 
 
@@ -329,9 +328,18 @@ namespace GrafosTRABPratico
                 Console.Error.WriteLine(ex.ToString());
                 return null;
             }
-            Dictionary<Hub, List<Rota>> listaADJ = grafo.GetRotas; //obtem a lista de adjacencia do grafo
 
-            
+            Dictionary<Hub, List<Rota>> listaADJ;
+            if (grafo.GetTipoRepresentacao() == "matriz")
+            {
+                listaADJ = grafo.GetMatrizPraLista();
+            }
+            else
+            {
+                listaADJ = grafo.GetRotas;
+            }
+
+
             Dictionary<(Hub, Hub), Rota> mapaArestas = new Dictionary<(Hub, Hub), Rota>(); //cria um mapa de arestas que mapeia cada par de vertices (origem, destino) pra sua aresta, facilita pra ver se uma aresta é direta
             //(hub, hub) = tupla, chave composta por dois objetos
 
@@ -695,7 +703,16 @@ namespace GrafosTRABPratico
 
         public List<Hub> CircuitoHamiltoniano(Grafo grafo)
         {
-            Dictionary<Hub, List<Rota>> Rotas = grafo.GetRotas;
+            Dictionary<Hub, List<Rota>> Rotas;
+            if (grafo.GetTipoRepresentacao() == "matriz")
+            {
+                Rotas = grafo.GetMatrizPraLista();
+            }
+            else
+            {
+                Rotas = grafo.GetRotas;
+            }
+
             Dictionary<Hub, int> Marcas = new Dictionary<Hub, int>();
 
             bool isCicle = false;
