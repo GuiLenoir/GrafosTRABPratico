@@ -39,6 +39,7 @@ namespace GrafosTRABPratico
 
             //inicializa a lista de uma vez
             _listaADJ = new Dictionary<Hub, List<Rota>>();
+            
         }
 
         public Dictionary<Hub, List<Rota>> GetRotas
@@ -83,61 +84,61 @@ namespace GrafosTRABPratico
             try
             {
 
-           
-            //vetor de todas as linhas do arquivo
-            string[] linhasArquivo = File.ReadAllLines(caminho);
-            //vetor que armazena a 1 linha do arquivo (que contem num de vertices e arestas)
-            string[] linhaCabecalho = linhasArquivo[0].Split(' ');
+
+                //vetor de todas as linhas do arquivo
+                string[] linhasArquivo = File.ReadAllLines(caminho);
+                //vetor que armazena a 1 linha do arquivo (que contem num de vertices e arestas)
+                string[] linhaCabecalho = linhasArquivo[0].Split(' ');
 
 
 
-            int quantVertices = int.Parse(linhaCabecalho[0]);
-            int quantAresta = int.Parse(linhaCabecalho[1]);
+                int quantVertices = int.Parse(linhaCabecalho[0]);
+                int quantAresta = int.Parse(linhaCabecalho[1]);
 
-            //VE SE É DENSO OU ESPARSO E ATUALIZA NO ATRIBUTO
-            
-
-            //ADICIONA OS VÉRTICES NO GRAFO
-            for (int i = 0; i < quantVertices; i++)
-            {
-                CarregarVertice();
-            }
-
-            //atualiza a representação de acordo com a densidade
-            AtualizarRepresentacao(quantAresta);
-
-            if (_tipoRepresentacao == "lista")
-            {
-                //se densidade baixa inicializa a lista
-                _listaADJ = InicializarLista();
-            }
-            else
-            {
-                //se densidade alta inicializa a matriz
-                _matrizADJ = InicializarMatriz();
-            }
-            
+                //VE SE É DENSO OU ESPARSO E ATUALIZA NO ATRIBUTO
 
 
-            //ADICIONA AS ARESTAS NO GRAFO DEPENDENDO DA REPRESENTACAO
-            //começa a partir da 2 linha (a 1 é de cabecalho)
-            for (int i = 1; i < linhasArquivo.Length; i++)
-            {
-                //separa cada elemento da linha em vetor
-                string[] linhaParte = linhasArquivo[i].Split(' ');
+                //ADICIONA OS VÉRTICES NO GRAFO
+                for (int i = 0; i < quantVertices; i++)
+                {
+                    CarregarVertice();
+                }
 
-                //1 numero = vertice de origem
-                //2 numero = vertice de destino
-                //3 numero = peso da aresta
-                //4 numero = capacidade da aresta
-                int verticeOrigem = int.Parse(linhaParte[0]);
-                int verticeDestino = int.Parse(linhaParte[1]);
-                double peso = int.Parse(linhaParte[2]);
-                double capacidade = int.Parse(linhaParte[3]);
+                //atualiza a representação de acordo com a densidade
+                AtualizarRepresentacao(quantAresta);
 
-                //metodo que carrega as arestas (diferente do adicionar arestas)
-                CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
-            }
+                if (_tipoRepresentacao == "lista")
+                {
+                    //se densidade baixa inicializa a lista
+                    _listaADJ = InicializarLista();
+                }
+                else
+                {
+                    //se densidade alta inicializa a matriz
+                    _matrizADJ = InicializarMatriz();
+                }
+
+
+
+                //ADICIONA AS ARESTAS NO GRAFO DEPENDENDO DA REPRESENTACAO
+                //começa a partir da 2 linha (a 1 é de cabecalho)
+                for (int i = 1; i < linhasArquivo.Length; i++)
+                {
+                    //separa cada elemento da linha em vetor
+                    string[] linhaParte = linhasArquivo[i].Split(' ');
+
+                    //1 numero = vertice de origem
+                    //2 numero = vertice de destino
+                    //3 numero = peso da aresta
+                    //4 numero = capacidade da aresta
+                    int verticeOrigem = int.Parse(linhaParte[0]);
+                    int verticeDestino = int.Parse(linhaParte[1]);
+                    double peso = int.Parse(linhaParte[2]);
+                    double capacidade = int.Parse(linhaParte[3]);
+
+                    //metodo que carrega as arestas (diferente do adicionar arestas)
+                    CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
+                }
             }
             catch (Exception ex)
             {
@@ -146,7 +147,6 @@ namespace GrafosTRABPratico
             }
 
         }
-
 
 
 
@@ -164,6 +164,8 @@ namespace GrafosTRABPratico
 
             if (_tipoRepresentacao == "matriz")
             {
+                Console.WriteLine("TA TENTANDO COMO MATRIZ");
+                Console.ReadKey();
                 sb.AppendLine("\nMATRIZ DE ADJACENCIA");
 
                 int linhas = _matrizADJ.GetLength(0); // número de linhas
@@ -318,7 +320,6 @@ namespace GrafosTRABPratico
             return rota;
         }
 
-
         /// <summary>
         /// Adiciona um Hub a lista de rotas
         /// </summary>
@@ -436,12 +437,14 @@ namespace GrafosTRABPratico
             return matriz;
         }
 
+
         public void AtualizarRepresentacao(int quantAresta = 0)
         {
             if (quantAresta != 0)
             {
                 _qntdAresta = quantAresta;
             }
+
             //DENSIDADE IGUAL OU MAIOR QUE 0.5 = DENSO (MATRIZ)
             //DENSIDADE MENOR QUE 0.5 = ESPARSO (LISTA)
             if (CalcularDensidade() >= 0.5)
@@ -482,7 +485,7 @@ namespace GrafosTRABPratico
 
             return false;
         }
-        private double CalcularDensidade()
+        public double CalcularDensidade()
         {
             //A CONTA É -       QUANTIDADE DE ARESTAS / QUANTIDADE DE VERTICES * (QUANTIDADE DE VERTICES - 1)
             //SO SERVE PRA GRAFO DIRECIONADO
@@ -491,6 +494,11 @@ namespace GrafosTRABPratico
         public int GetQNTDVertices()
         {
             return _qntdVertice;
+        }
+
+        public int GetQNTDArestas()
+        {
+            return _qntdAresta;
         }
 
         public string GetTipoRepresentacao()

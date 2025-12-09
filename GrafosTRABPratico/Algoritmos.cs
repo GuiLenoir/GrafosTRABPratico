@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -15,6 +16,15 @@ namespace GrafosTRABPratico
         //TEM QUE VERIFICAR PRA VER O QUE CADA ALGORTIMO REALMENTE VAI RETORNAR (SE RETORNA UM INT COM INFORMAÇÃO ESPECIFICA OU UMA STRING COM VÁRIAS INFORMAÇÕES POR EXEMPLO)
 
 
+      
+        private Log _logs;
+        public Algoritmos()
+        {
+        }
+        public Algoritmos(string caminho)
+        {
+            _logs = new Log(caminho);
+        }
         /// <summary>
         /// Método que implementa o algoritmo de Djksita para encontrar o roteamento de menor custo entra vertices
         /// </summary>
@@ -22,7 +32,8 @@ namespace GrafosTRABPratico
         /// <param name="inicio">Vertice de inicio</param>
         /// <param name="destino">Vertice de destino</param>
         /// <returns></returns>
-        public List<Hub> RoteamentoMenorCusto(Grafo grafo, int inicio, int destino)//Dijkstra
+        /// 
+        public List<Hub> DijkstraCaminhoMinimo(Grafo grafo, int inicio, int destino)//Dijkstra
         {
             Dictionary<Hub, List<Rota>> Rotas;
             if (grafo.GetTipoRepresentacao() == "matriz")
@@ -144,15 +155,16 @@ namespace GrafosTRABPratico
 
             caminhoMinimo.Reverse();
 
-            Log logs = new Log();
-            logs.Registrar("Dijkstra - Roteamento Menor Custo");
+           
+            _logs.Registrar("Dijkstra - Roteamento Menor Custo");
+            _logs.Registrar($"Vértice {inicio} até {destino}");
             StringBuilder sb = new StringBuilder();
             foreach (Hub h in caminhoMinimo)
             {
                 sb.Append($"{h.ID()} ");
             }
-            logs.Registrar(sb.ToString());
-            logs.Salvar();
+            _logs.Registrar(sb.ToString());
+            _logs.Salvar();
 
             return caminhoMinimo;
 
@@ -164,84 +176,86 @@ namespace GrafosTRABPratico
         /// </summary>
         /// <param name="grafo"></param>
         /// <returns></returns>
-        public Grafo RotaUnica(Grafo grafo)
+        public Grafo PrimAGM(Grafo grafo)
         {
-            Hub raiz = grafo.GetSourceByID(1);//vértice raiz, por padrão o primeiro
-
-            Grafo AGM = new Grafo();//cria o subgrafo da AGM
-            List<Hub> HubsAGM = new List<Hub>();//lista de hubs da agm usado para percorrer
-
-            Dictionary<Hub, List<Rota>> Rotas;
-            if (grafo.GetTipoRepresentacao() == "matriz")
             {
-                Rotas = grafo.GetMatrizPraLista();
-            }
-            else
-            {
-                Rotas = grafo.GetRotas;
-            }
+                Hub raiz = grafo.GetSourceByID(1);//vértice raiz, por padrão o primeiro
 
-            HubsAGM.Add(raiz);//add a raiz na lista de hubs
-            AGM.AddVerticeEspecifico(raiz);//add a raiz na AGM
+                Grafo AGM = new Grafo();//cria o subgrafo da AGM
+                List<Hub> HubsAGM = new List<Hub>();//lista de hubs da agm usado para percorrer
 
-
-            while (AGM.GetRotas.Count <= Rotas.Count)
-            {
-                double menorCusto = double.MaxValue;
-                Rota melhorAresta = null;//aresta a ser selecionada
-                Hub melhorOrigem = null;
-                Hub melhorDestino = null;
-
-                foreach (Hub v in HubsAGM)//Percorre os hubs incluidos na AGM
+                Dictionary<Hub, List<Rota>> Rotas;
+                if (grafo.GetTipoRepresentacao() == "matriz")
                 {
-                    foreach (Rota rota in Rotas[v])//Percorre as rotas do grafo original
+                    Rotas = grafo.GetMatrizPraLista();
+                }
+                else
+                {
+                    Rotas = grafo.GetRotas;
+                }
+
+                HubsAGM.Add(raiz);//add a raiz na lista de hubs
+                AGM.AddVerticeEspecifico(raiz);//add a raiz na AGM
+
+
+                while (AGM.GetRotas.Count <= Rotas.Count)
+                {
+                    double menorCusto = double.MaxValue;
+                    Rota melhorAresta = null;//aresta a ser selecionada
+                    Hub melhorOrigem = null;
+                    Hub melhorDestino = null;
+
+                    foreach (Hub v in HubsAGM)//Percorre os hubs incluidos na AGM
                     {
-                        Hub destino = rota.GetDestino();
-
-                        if (!HubsAGM.Contains(destino))//se destino não estiver nos hubs da AGM fazemos a verificação de custo e adicionamos
+                        foreach (Rota rota in Rotas[v])//Percorre as rotas do grafo original
                         {
-                            if (rota.GetPeso() < menorCusto)
-                            {
-                                menorCusto = rota.GetPeso();
-                                melhorAresta = rota;
-                                melhorOrigem = v;
-                                melhorDestino = destino;
+                            Hub destino = rota.GetDestino();
 
+                            if (!HubsAGM.Contains(destino))//se destino não estiver nos hubs da AGM fazemos a verificação de custo e adicionamos
+                            {
+                                if (rota.GetPeso() < menorCusto)
+                                {
+                                    menorCusto = rota.GetPeso();
+                                    melhorAresta = rota;
+                                    melhorOrigem = v;
+                                    melhorDestino = destino;
+
+                                }
                             }
                         }
                     }
+
+                    if (melhorAresta == null)
+                    {
+                        //Log logs1 = new Log();
+                        //logs1.Registrar("Prim - Rota Unica de Inspeção");
+
+                        //logs1.Registrar(AGM.VisualizarGrafo());
+                        //logs1.Salvar();
+                        return AGM;//Se não ouver melhor aresta a execução termina
+                    }
+
+                    AGM.AddVerticeEspecifico(melhorDestino);//add destino na AVG
+                    HubsAGM.Add(melhorDestino);//add destino na lista de hubs
+
+                    if (!AGM.GetRotas.ContainsKey(melhorOrigem))//se não ouver o hub na lista de rotas da AGM ele cira
+                    {
+                        AGM.AddHubRota(melhorOrigem);
+                    }
+
+                    AGM.AddAresta(melhorOrigem.ID(), melhorDestino.ID(), melhorAresta.GetPeso(), melhorAresta.GetCapacidade());//Adiciona a rota ao vértice
+
                 }
 
-                if (melhorAresta == null)
-                {
-                    Log logs1 = new Log();
-                    logs1.Registrar("Prim - Rota Unica de Inspeção");
+                //Log logs2 = new Log();
+                //logs2.Registrar("Prim - Rota Unica de Inspeção");
 
-                    logs1.Registrar(AGM.VisualizarGrafo());
-                    logs1.Salvar();
-                    return AGM;//Se não ouver melhor aresta a execução termina
-                }
+                //logs2.Registrar(AGM.VisualizarGrafo());
+                //logs2.Salvar();
 
-                AGM.AddVerticeEspecifico(melhorDestino);//add destino na AVG
-                HubsAGM.Add(melhorDestino);//add destino na lista de hubs
 
-                if (!AGM.GetRotas.ContainsKey(melhorOrigem))//se não ouver o hub na lista de rotas da AGM ele cira
-                {
-                    AGM.AddHubRota(melhorOrigem);
-                }
-
-                AGM.AddAresta(melhorOrigem.ID(), melhorDestino.ID(), melhorAresta.GetPeso(), melhorAresta.GetCapacidade());//Adiciona a rota ao vértice
-
+                return AGM;
             }
-
-            Log logs2 = new Log();
-            logs2.Registrar("Prim - Rota Unica de Inspeção");
-
-            logs2.Registrar(AGM.VisualizarGrafo());
-            logs2.Salvar();
-
-
-            return AGM;
         }
 
 
@@ -312,23 +326,22 @@ namespace GrafosTRABPratico
                 cores[aresta] = corEscolhida;
             }
 
-            Log logs = new Log();
-            logs.Registrar("Vizing - Rota unica de inspeção");
+            _logs.Registrar("Vizing - Agendamento de Manutenções sem Conflito\n");
             var turnos = cores.GroupBy(kvp => kvp.Value).OrderBy(g => g.Key);
 
             foreach (var turno in turnos)
             {
-                logs.Registrar($"Turno {turno.Key}:");
+                _logs.Registrar($"\nTurno {turno.Key}:");
                 foreach (var kvp in turno)
                 {
                     var r = kvp.Key;
-                    logs.Registrar($"  Rota {r.GetOrigem().ID()}-{r.GetDestino().ID()}");
+                    _logs.Registrar($"  Rota {r.GetOrigem().ID()}-{r.GetDestino().ID()}");
                 }
             }
 
             int numeroTurnos = turnos.Count();
-            logs.Registrar($"Número de turnos = {numeroTurnos}");
-            logs.Salvar();
+            _logs.Registrar($"\nNúmero de turnos = {numeroTurnos}");
+            _logs.Salvar();
 
 
             return cores;
@@ -585,10 +598,10 @@ namespace GrafosTRABPratico
                 sb.AppendLine($"(NÃO POSSUI CORTE MÍNIMO)");
             }
 
-            Log logs = new Log();
-            logs.Registrar("Edmonds-Karp - Fluxo Máximo e Corte Mínimo");
-            logs.Registrar(sb.ToString());
-            logs.Salvar();
+            _logs.Registrar("Edmonds-Karp - Fluxo Máximo e Corte Mínimo");
+            _logs.Registrar($"Vértice {origemID} a {destinoID}");
+            _logs.Registrar(sb.ToString());
+            _logs.Salvar();
 
             return sb.ToString();
         }
@@ -636,14 +649,22 @@ namespace GrafosTRABPratico
 
                 if (proxima == null)
                 {
-                    proxima = arestas.First(r => r.GetOrigem() == atual || r.GetDestino() == atual);
+                    proxima = arestas.FirstOrDefault(r => r.GetOrigem() == atual || r.GetDestino() == atual);
                 }
 
                 caminhoEuleriano.Add(proxima);
                 arestas.Remove(proxima);
+                
 
-                atual = (proxima.GetOrigem() == atual) ? proxima.GetDestino() : proxima.GetOrigem();
-            }
+
+                    if (proxima == null)
+                    {
+                        // Nenhuma aresta conectada ao vértice atual → grafo desconexo ou não é Euleriano
+                        return null;
+
+                    }
+                    atual = (proxima.GetOrigem() == atual) ? proxima.GetDestino() : proxima.GetOrigem();
+                }
            
 
             return caminhoEuleriano;
@@ -795,7 +816,6 @@ namespace GrafosTRABPratico
             {
                 if (Marcas[hub] == 1)
                 {
-                    Console.WriteLine("CICLO DETECTADO: não existe ordenação topológica.");
                     return true;
                 }
 
@@ -816,6 +836,5 @@ namespace GrafosTRABPratico
 
             return false;
         }
-        //talvez ainda precise de mais
     }
 }

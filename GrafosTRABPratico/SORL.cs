@@ -11,23 +11,29 @@ namespace GrafosTRABPratico
         //Sistema de Otimização de Rotas Logísticas (SORL)
         //CLASSE PRINCIPAL DE ORGANIZAÇÃO
         private Grafo _grafo = new Grafo();
+        private Log _logs;
 
-        public Grafo Grafo { get { return _grafo; } }
+        public Grafo Grafo;
 
-        
-        private Algoritmos _algoritmos = new Algoritmos();
 
-        public Algoritmos Agoritmos
+        private Algoritmos _algoritmos;
+
+        public Algoritmos Algoritmos
         {
             get {  return _algoritmos; }
         }
         
-        public SORL() { }
+        public SORL()
+        {
+            _algoritmos = new Algoritmos();
+        }
 
         public void CarregarGrafo(string caminho)
         {
             _grafo = new Grafo();
             _grafo.CarregarArquivo(caminho);
+            _logs = new Log(caminho);
+            _algoritmos = new Algoritmos(caminho);
         }
 
         public bool AdicionarHub()
@@ -66,6 +72,15 @@ namespace GrafosTRABPratico
         public string QuantidadeVertices()
         {
             return  $"{_grafo.GetQNTDVertices()}";
+        }
+        public Grafo GetGrafo()
+        {
+            return _grafo;
+        }
+
+        public Log GetLogs()
+        {
+            return _logs;
         }
     }
 }

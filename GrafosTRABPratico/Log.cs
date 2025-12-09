@@ -10,24 +10,35 @@ namespace GrafosTRABPratico
     public class Log
     {
         private StringBuilder _log = new StringBuilder();
-        private string _path = "logs.txt";
+        private string _path;
 
-        public Log()
+        public Log(string path)
         {
-            _log.AppendLine($"Relatório - {DateTime.Now}");
+            string nomePath = Path.GetFileName(path);
+            _log.AppendLine($"\nRelatório ({nomePath}) - {DateTime.Now}\n");
+            _path = $"{Path.GetFileNameWithoutExtension(nomePath)}.txt";
         }
 
         public void Registrar(string registrar)
         {
             _log.AppendLine(registrar);
+           
         }
 
-        public void Salvar()
+          public void Salvar()
         {
+            _log.AppendLine("\n------------------------------------------");
             using (StreamWriter sw = new StreamWriter(_path, true))
             {
                 sw.WriteLine(_log + "\n\n");
+                sw.Close();
             }
+            Limpar();
+        }
+
+        public void Limpar()
+        {
+            _log.Clear();
         }
 
 

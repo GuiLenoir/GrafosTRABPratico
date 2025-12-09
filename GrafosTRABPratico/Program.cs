@@ -15,7 +15,7 @@ namespace GrafosTRABPratico
 
             //inicia o programa com um grafo já selecionado, caso queira
             //caso não, existe opção de carregamento do grafo dentro do programa
-            string grafo = "path";
+            string grafo = "";
 
             //personalização
             Console.Title = "Máxima Logística S.A.";
@@ -24,6 +24,12 @@ namespace GrafosTRABPratico
             //instanciação
             SORL sorl = new SORL();
             Menu menu = new Menu(sorl);
+
+            if (grafo != "")
+            {
+                sorl.CarregarGrafo(grafo);
+            }
+
             menu.Exibir();
             //
         }
