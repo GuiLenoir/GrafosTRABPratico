@@ -39,11 +39,28 @@ namespace GrafosTRABPratico
 
             //inicializa a lista de uma vez
             _listaADJ = new Dictionary<Hub, List<Rota>>();
+            
         }
 
         public Dictionary<Hub, List<Rota>> GetRotas
         {
             get { return _listaADJ; }
+        }
+
+        public Dictionary<int, Hub> GetHubs
+        {
+            get { return _hubs; }
+            set { _hubs = value; }
+        }
+
+        public List<Rota> GetVizinhos(Hub vertice)
+        {
+            List<Rota> vizinhos = new List<Rota>();
+            foreach (Rota rota in _listaADJ[vertice])
+            {
+                vizinhos.Add(rota);
+            }
+            return vizinhos;
         }
 
         /// <summary>
@@ -67,61 +84,61 @@ namespace GrafosTRABPratico
             try
             {
 
-           
-            //vetor de todas as linhas do arquivo
-            string[] linhasArquivo = File.ReadAllLines(caminho);
-            //vetor que armazena a 1 linha do arquivo (que contem num de vertices e arestas)
-            string[] linhaCabecalho = linhasArquivo[0].Split(' ');
+
+                //vetor de todas as linhas do arquivo
+                string[] linhasArquivo = File.ReadAllLines(caminho);
+                //vetor que armazena a 1 linha do arquivo (que contem num de vertices e arestas)
+                string[] linhaCabecalho = linhasArquivo[0].Split(' ');
 
 
 
-            int quantVertices = int.Parse(linhaCabecalho[0]);
-            int quantAresta = int.Parse(linhaCabecalho[1]);
+                int quantVertices = int.Parse(linhaCabecalho[0]);
+                int quantAresta = int.Parse(linhaCabecalho[1]);
 
-            //VE SE É DENSO OU ESPARSO E ATUALIZA NO ATRIBUTO
-            
-
-            //ADICIONA OS VÉRTICES NO GRAFO
-            for (int i = 0; i < quantVertices; i++)
-            {
-                CarregarVertice();
-            }
-
-            //atualiza a representação de acordo com a densidade
-            AtualizarRepresentacao(quantAresta);
-
-            if (_tipoRepresentacao == "lista")
-            {
-                //se densidade baixa inicializa a lista
-                _listaADJ = InicializarLista();
-            }
-            else
-            {
-                //se densidade alta inicializa a matriz
-                _matrizADJ = InicializarMatriz();
-            }
-            
+                //VE SE É DENSO OU ESPARSO E ATUALIZA NO ATRIBUTO
 
 
-            //ADICIONA AS ARESTAS NO GRAFO DEPENDENDO DA REPRESENTACAO
-            //começa a partir da 2 linha (a 1 é de cabecalho)
-            for (int i = 1; i < linhasArquivo.Length; i++)
-            {
-                //separa cada elemento da linha em vetor
-                string[] linhaParte = linhasArquivo[i].Split(' ');
+                //ADICIONA OS VÉRTICES NO GRAFO
+                for (int i = 0; i < quantVertices; i++)
+                {
+                    CarregarVertice();
+                }
 
-                //1 numero = vertice de origem
-                //2 numero = vertice de destino
-                //3 numero = peso da aresta
-                //4 numero = capacidade da aresta
-                int verticeOrigem = int.Parse(linhaParte[0]);
-                int verticeDestino = int.Parse(linhaParte[1]);
-                double peso = int.Parse(linhaParte[2]);
-                double capacidade = int.Parse(linhaParte[3]);
+                //atualiza a representação de acordo com a densidade
+                AtualizarRepresentacao(quantAresta);
 
-                //metodo que carrega as arestas (diferente do adicionar arestas)
-                CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
-            }
+                if (_tipoRepresentacao == "lista")
+                {
+                    //se densidade baixa inicializa a lista
+                    _listaADJ = InicializarLista();
+                }
+                else
+                {
+                    //se densidade alta inicializa a matriz
+                    _matrizADJ = InicializarMatriz();
+                }
+
+
+
+                //ADICIONA AS ARESTAS NO GRAFO DEPENDENDO DA REPRESENTACAO
+                //começa a partir da 2 linha (a 1 é de cabecalho)
+                for (int i = 1; i < linhasArquivo.Length; i++)
+                {
+                    //separa cada elemento da linha em vetor
+                    string[] linhaParte = linhasArquivo[i].Split(' ');
+
+                    //1 numero = vertice de origem
+                    //2 numero = vertice de destino
+                    //3 numero = peso da aresta
+                    //4 numero = capacidade da aresta
+                    int verticeOrigem = int.Parse(linhaParte[0]);
+                    int verticeDestino = int.Parse(linhaParte[1]);
+                    double peso = int.Parse(linhaParte[2]);
+                    double capacidade = int.Parse(linhaParte[3]);
+
+                    //metodo que carrega as arestas (diferente do adicionar arestas)
+                    CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
+                }
             }
             catch (Exception ex)
             {
@@ -134,87 +151,106 @@ namespace GrafosTRABPratico
 
 
 
-
-        public void VisualizarGrafo()
+        public string VisualizarGrafo()
         {
+            StringBuilder sb = new StringBuilder();
+
             if (_qntdVertice == 0 && _qntdAresta == 0)
             {
-                Console.WriteLine("\n[ NENHUM GRAFO CARREGADO ]");
+                sb.AppendLine("\n[ NENHUM GRAFO CARREGADO ]");
                 Console.ReadKey(true);
-                return;
+                return sb.ToString();
             }
-           
+
             if (_tipoRepresentacao == "matriz")
             {
-                Console.WriteLine("\nMATRIZ DE ADJACENCIA");
+                Console.WriteLine("TA TENTANDO COMO MATRIZ");
+                Console.ReadKey();
+                sb.AppendLine("\nMATRIZ DE ADJACENCIA");
 
                 int linhas = _matrizADJ.GetLength(0); // número de linhas
                 int colunas = _matrizADJ.GetLength(1); // número de colunas
 
                 //só formatação daq pra baixo
-                Console.Write("   ");
+                sb.Append("   ");
                 for (int j = 0; j < colunas; j++)
                 {
-                    Console.Write(j+1 + "  ");
+                    sb.Append(j + 1 + "  ");
                 }
-                Console.WriteLine();
+                sb.AppendLine();
 
-                Console.Write("  ");
+                sb.Append("  ");
                 for (int j = 0; j < colunas; j++)
                 {
-                    Console.Write("---");
+                    sb.Append("---");
                 }
-                Console.WriteLine();
+                sb.AppendLine();
 
                 for (int i = 0; i < linhas; i++)
                 {
-                    Console.Write(i+1 + "| "); // número da linha
+                    sb.Append(i + 1 + "| "); // número da linha
                     for (int j = 0; j < colunas; j++)
                     {
-                        
+
                         if (_matrizADJ[i, j] == null)
                         {
-                            Console.Write("0  ");
+                            sb.Append("0  ");
                         }
                         else
                         {
-                            Console.Write(_matrizADJ[i, j].GetPeso() + "  ");
+                            sb.Append(_matrizADJ[i, j].GetPeso() + "  ");
                         }
                     }
-                    Console.WriteLine(); // quebra de linha
+                    sb.AppendLine(); // quebra de linha
                 }
-                Console.ReadKey(true);
+
             }
             else
             {
-                Console.WriteLine("\nLISTA DE ADJACENCIA");
+                sb.AppendLine("\nLISTA DE ADJACENCIA");
 
                 foreach (KeyValuePair<Hub, List<Rota>> rotas in _listaADJ)
                 {
-                    Console.Write(rotas.Key.ID() + ": ");
+                    sb.Append(rotas.Key.ID() + ": ");
 
                     foreach (Rota rota in rotas.Value)
                     {
-                        Console.Write($"[{rota.GetDestino().ID()}, {rota.GetPeso()}] ");
+                        sb.Append($"[{rota.GetDestino().ID()}, {rota.GetPeso()}] ");
                     }
 
-                    Console.WriteLine();
+                    sb.AppendLine();
 
                 }
 
-                Console.WriteLine($"\n\nEXEMPLO:  V1: [V2, peso aresta]");
-                Console.ReadKey(true);
-            }
-        }
-        
-        
+                sb.AppendLine($"\n\nEXEMPLO:  V1: [V2, peso aresta]");
 
-        
+            }
+
+            return sb.ToString();
+        }
+
+
+
+
 
         private Hub CarregarVertice()
         {
             //adiciona um vertice no dicionario hub
             Hub h = new Hub();
+            _hubs.Add(h.ID(), h);
+            _qntdVertice++;
+
+            return h;
+        }
+
+        /// <summary>
+        /// Adiciona vértice passando um vértice por parâmetro, usado nos algoritmos
+        /// </summary>
+        /// <param name="h">Vértice a ser adicionado</param>
+        /// <returns></returns>
+        public Hub AddVerticeEspecifico(Hub h)
+        {
+            //adiciona um vertice no dicionario hub a partir de um vértice já criado
             _hubs.Add(h.ID(), h);
             _qntdVertice++;
 
@@ -284,13 +320,31 @@ namespace GrafosTRABPratico
             return rota;
         }
 
-        //ESSE METODO É PRA COLOCAR A ARESTA AUMENTANDO NO CONTADOR
+        /// <summary>
+        /// Adiciona um Hub a lista de rotas
+        /// </summary>
+        /// <param name="origem">Objeto para ser adicionado</param>
+        public void AddHubRota(Hub origem)
+        {
+            _listaADJ.Add(origem, new List<Rota>());
+        }
+
+
+        /// <summary>
+        /// Adiciona uma aresta(rota) a lista de arestas (Grafo)
+        /// </summary>
+        /// <param name="verticeOrigem"></param>
+        /// <param name="verticeDestino"></param>
+        /// <param name="peso"></param>
+        /// <param name="capacidade"></param>
+        /// <returns></returns>
         public bool AddAresta(int verticeOrigem, int verticeDestino, double peso, double capacidade)
         {
-            try { 
-           Rota rota = CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
-           
-           MudouRepresentacao();
+            try
+            {
+                Rota rota = CarregarAresta(verticeOrigem, verticeDestino, peso, capacidade);
+
+                MudouRepresentacao();
             }
             catch (Exception ex)
             {
@@ -383,12 +437,14 @@ namespace GrafosTRABPratico
             return matriz;
         }
 
+
         public void AtualizarRepresentacao(int quantAresta = 0)
         {
             if (quantAresta != 0)
             {
                 _qntdAresta = quantAresta;
             }
+
             //DENSIDADE IGUAL OU MAIOR QUE 0.5 = DENSO (MATRIZ)
             //DENSIDADE MENOR QUE 0.5 = ESPARSO (LISTA)
             if (CalcularDensidade() >= 0.5)
@@ -429,7 +485,7 @@ namespace GrafosTRABPratico
 
             return false;
         }
-        private double CalcularDensidade()
+        public double CalcularDensidade()
         {
             //A CONTA É -       QUANTIDADE DE ARESTAS / QUANTIDADE DE VERTICES * (QUANTIDADE DE VERTICES - 1)
             //SO SERVE PRA GRAFO DIRECIONADO
@@ -438,6 +494,48 @@ namespace GrafosTRABPratico
         public int GetQNTDVertices()
         {
             return _qntdVertice;
+        }
+
+        public int GetQNTDArestas()
+        {
+            return _qntdAresta;
+        }
+
+        public string GetTipoRepresentacao()
+        {
+            return _tipoRepresentacao;
+        }
+        public Dictionary<Hub, List<Rota>> GetMatrizPraLista()
+        {
+
+
+            // inicializa lista
+            Dictionary<Hub, List<Rota>> listaADJ = InicializarLista();
+
+
+            int linhas = _matrizADJ.GetLength(0); // número de linhas
+            int colunas = _matrizADJ.GetLength(1); // número de colunas
+
+
+
+            // percorre matriz
+            for (int i = 0; i < linhas; i++)
+            {
+                for (int j = 0; j < colunas; j++)
+                {
+                    Rota rota = _matrizADJ[i, j];
+
+                    if (rota != null)
+                    {
+                        Hub origem = _hubs[i + 1];
+                        listaADJ[origem].Add(rota);
+                    }
+                }
+            }
+
+
+            // substitui
+            return listaADJ;
         }
     }
 }
