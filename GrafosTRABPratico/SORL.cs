@@ -58,9 +58,9 @@ namespace GrafosTRABPratico
             return _grafo.AddAresta(origem, destino, peso, capacidade);
         }
 
-        public void VisualizarGrafo()
+        public string VisualizarGrafo()
         {
-            _grafo.VisualizarGrafo();
+           return _grafo.VisualizarGrafo();
         }
 
         public string QuantidadeVertices()

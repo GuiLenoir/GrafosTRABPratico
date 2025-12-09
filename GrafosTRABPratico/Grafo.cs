@@ -147,85 +147,89 @@ namespace GrafosTRABPratico
 
         }
 
-        
 
 
 
-        public void VisualizarGrafo()
+
+        public string VisualizarGrafo()
         {
+            StringBuilder sb = new StringBuilder();
+
             if (_qntdVertice == 0 && _qntdAresta == 0)
             {
-                Console.WriteLine("\n[ NENHUM GRAFO CARREGADO ]");
+                sb.AppendLine("\n[ NENHUM GRAFO CARREGADO ]");
                 Console.ReadKey(true);
-                return;
+                return sb.ToString();
             }
-           
+
             if (_tipoRepresentacao == "matriz")
             {
-                Console.WriteLine("\nMATRIZ DE ADJACENCIA");
+                sb.AppendLine("\nMATRIZ DE ADJACENCIA");
 
                 int linhas = _matrizADJ.GetLength(0); // número de linhas
                 int colunas = _matrizADJ.GetLength(1); // número de colunas
 
                 //só formatação daq pra baixo
-                Console.Write("   ");
+                sb.Append("   ");
                 for (int j = 0; j < colunas; j++)
                 {
-                    Console.Write(j+1 + "  ");
+                    sb.Append(j + 1 + "  ");
                 }
-                Console.WriteLine();
+                sb.AppendLine();
 
-                Console.Write("  ");
+                sb.Append("  ");
                 for (int j = 0; j < colunas; j++)
                 {
-                    Console.Write("---");
+                    sb.Append("---");
                 }
-                Console.WriteLine();
+                sb.AppendLine();
 
                 for (int i = 0; i < linhas; i++)
                 {
-                    Console.Write(i+1 + "| "); // número da linha
+                    sb.Append(i + 1 + "| "); // número da linha
                     for (int j = 0; j < colunas; j++)
                     {
-                        
+
                         if (_matrizADJ[i, j] == null)
                         {
-                            Console.Write("0  ");
+                            sb.Append("0  ");
                         }
                         else
                         {
-                            Console.Write(_matrizADJ[i, j].GetPeso() + "  ");
+                            sb.Append(_matrizADJ[i, j].GetPeso() + "  ");
                         }
                     }
-                    Console.WriteLine(); // quebra de linha
+                    sb.AppendLine(); // quebra de linha
                 }
-                Console.ReadKey(true);
+
             }
             else
             {
-                Console.WriteLine("\nLISTA DE ADJACENCIA");
+                sb.AppendLine("\nLISTA DE ADJACENCIA");
 
                 foreach (KeyValuePair<Hub, List<Rota>> rotas in _listaADJ)
                 {
-                    Console.Write(rotas.Key.ID() + ": ");
+                    sb.Append(rotas.Key.ID() + ": ");
 
                     foreach (Rota rota in rotas.Value)
                     {
-                        Console.Write($"[(DESTINO:{rota.GetDestino().ID()}), (PESO:{rota.GetPeso()}), (CAPACIDADE:{rota.GetCapacidade()})] ");
+                        sb.Append($"[{rota.GetDestino().ID()}, {rota.GetPeso()}] ");
                     }
 
-                    Console.WriteLine();
+                    sb.AppendLine();
 
                 }
 
-                Console.WriteLine($"\n\nEXEMPLO:  V1: [V2, peso aresta]");
-                Console.ReadKey(true);
-            }
-        }
-        
-        
+                sb.AppendLine($"\n\nEXEMPLO:  V1: [V2, peso aresta]");
 
-        
+            }
+
+            return sb.ToString();
+        }
+
+
+
+
 
         private Hub CarregarVertice()
         {

@@ -66,7 +66,8 @@ namespace GrafosTRABPratico
                         break;
 
                     case "2":
-                        _sorl.VisualizarGrafo();
+                        Console.WriteLine(_sorl.VisualizarGrafo());
+                        Console.ReadKey(true);
                         break;
 
                     case "3":
@@ -148,7 +149,8 @@ namespace GrafosTRABPratico
                         Console.WriteLine("A Solução ótima para expansão é: ");
                         Grafo RotaUnica = _sorl.Agoritmos.RotaUnica(_sorl.Grafo);
 
-                        RotaUnica.VisualizarGrafo();
+                        Console.WriteLine(RotaUnica.VisualizarGrafo());
+                        
                         Console.ReadKey();
                         Console.WriteLine();
                         break;
@@ -180,32 +182,46 @@ namespace GrafosTRABPratico
                         break;
 
                     case "5":
+                        
+                        List<Hub> caminhoHamiltoniano = _sorl.Agoritmos.CircuitoHamiltoniano(_sorl.Grafo);
+                        Log logs = new Log();
+                        logs.Registrar("Caminho Euleriano - Fleury | Caminho Hamiltoniano");
+                        logs.Registrar("As rotas únicas de inspeção são");
+                        logs.Registrar("Visitando todas os Hubs uma única vez:");
+
+
                         Console.WriteLine("As rotas únicas de inspeção são");
                         Console.WriteLine("Visitando todas os Hubs uma única vez:");
-                        List<Hub> caminhoHamiltoniano = _sorl.Agoritmos.CircuitoHamiltoniano(_sorl.Grafo);
+                        StringBuilder logger = new StringBuilder();
                         if (caminhoHamiltoniano != null)
                         {
                             foreach (Hub h in caminhoHamiltoniano)
                             {
                                 Console.Write($"{h.ID()} ");
+                                logger.Append($"{h.ID()} ");
                             }
                         }
                         else
                         {
                             Console.WriteLine("CICLO DETECTADO: não existe Rota única");
+                            logger.AppendLine("CICLO DETECTADO: não existe Rota única");
                         }
-
                         Console.WriteLine();
-
+                        logger.AppendLine();
 
                         Console.WriteLine("Visitando todas as Rotas uma única vez:");
+                        logger.AppendLine("Visitando todas as Rotas uma única vez:");
                         List<Rota> caminho = _sorl.Agoritmos.CircuitoEuleriano(_sorl.Grafo);
 
                         foreach (Rota r in caminho)
                         {
                             Console.Write($"{r.GetOrigem().ID()} -> {r.GetDestino().ID()} | ");
+                            logger.Append($"{r.GetOrigem().ID()} -> {r.GetDestino().ID()} | ");
                         }
 
+
+                        logs.Registrar(logger.ToString());
+                        logs.Salvar();
 
                         Console.ReadKey(true);
                         break;

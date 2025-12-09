@@ -144,6 +144,16 @@ namespace GrafosTRABPratico
 
             caminhoMinimo.Reverse();
 
+            Log logs = new Log();
+            logs.Registrar("Dijkstra - Roteamento Menor Custo");
+            StringBuilder sb = new StringBuilder();
+            foreach (Hub h in caminhoMinimo)
+            {
+                sb.Append($"{h.ID()} ");
+            }
+            logs.Registrar(sb.ToString());
+            logs.Salvar();
+
             return caminhoMinimo;
 
         }
@@ -219,6 +229,13 @@ namespace GrafosTRABPratico
 
             }
 
+            Log logs = new Log();
+            logs.Registrar("Prim - Rota Unica de Inspeção");
+
+            logs.Registrar(AGM.VisualizarGrafo());
+            logs.Salvar();
+
+
             return AGM;
         }
 
@@ -289,6 +306,25 @@ namespace GrafosTRABPratico
                 //Adicina a cor
                 cores[aresta] = corEscolhida;
             }
+
+            Log logs = new Log();
+            logs.Registrar("Vizing - Rota unica de inspeção");
+            var turnos = cores.GroupBy(kvp => kvp.Value).OrderBy(g => g.Key);
+
+            foreach (var turno in turnos)
+            {
+                logs.Registrar($"Turno {turno.Key}:");
+                foreach (var kvp in turno)
+                {
+                    var r = kvp.Key;
+                    logs.Registrar($"  Rota {r.GetOrigem().ID()}-{r.GetDestino().ID()}");
+                }
+            }
+
+            int numeroTurnos = turnos.Count();
+            logs.Registrar($"Número de turnos = {numeroTurnos}");
+            logs.Salvar();
+
 
             return cores;
         }
@@ -544,6 +580,11 @@ namespace GrafosTRABPratico
                 sb.AppendLine($"(NÃO POSSUI CORTE MÍNIMO)");
             }
 
+            Log logs = new Log();
+            logs.Registrar("Edmonds-Karp - Fluxo Máximo e Corte Mínimo");
+            logs.Registrar(sb.ToString());
+            logs.Salvar();
+
             return sb.ToString();
         }
 
@@ -598,6 +639,7 @@ namespace GrafosTRABPratico
 
                 atual = (proxima.GetOrigem() == atual) ? proxima.GetDestino() : proxima.GetOrigem();
             }
+           
 
             return caminhoEuleriano;
         }
