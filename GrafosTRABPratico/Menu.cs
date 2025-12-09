@@ -154,6 +154,29 @@ namespace GrafosTRABPratico
                         break;
 
                     case "4":
+                        Console.WriteLine("Agendador de manuteções:");
+
+                        Console.WriteLine("Rotas de manutenção sem conflito\n");
+                        Console.WriteLine("Turnos:");
+
+                        Dictionary<Rota, int> coresPorAresta = _sorl.Agoritmos.AgendamentoManutencoes(_sorl.Grafo);
+
+                        var turnos = coresPorAresta.GroupBy(kvp => kvp.Value).OrderBy(g => g.Key);
+
+                        foreach (var turno in turnos)
+                        {
+                            Console.WriteLine($"Turno {turno.Key}:");
+                            foreach (var kvp in turno)
+                            {
+                                var r = kvp.Key;
+                                Console.WriteLine($"  Rota {r.GetOrigem().ID()}-{r.GetDestino().ID()}");
+                            }
+                        }
+
+                        int numeroTurnos = turnos.Count();
+                        Console.WriteLine($"Número de turnos = {numeroTurnos}");
+
+                        Console.ReadKey(true);
                         break;
 
                     case "5":
