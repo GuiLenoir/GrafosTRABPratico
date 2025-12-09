@@ -195,6 +195,18 @@ namespace GrafosTRABPratico
                             Console.WriteLine("CICLO DETECTADO: não existe Rota única");
                         }
 
+                        Console.WriteLine();
+
+
+                        Console.WriteLine("Visitando todas as Rotas uma única vez:");
+                        List<Rota> caminho = _sorl.Agoritmos.CircuitoEuleriano(_sorl.Grafo);
+
+                        foreach (Rota r in caminho)
+                        {
+                            Console.Write($"{r.GetOrigem().ID()} -> {r.GetDestino().ID()} | ");
+                        }
+
+
                         Console.ReadKey(true);
                         break;
 

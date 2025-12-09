@@ -544,11 +544,155 @@ namespace GrafosTRABPratico
 
 
 
+        /// <summary>
+        /// Método para encontrar caminho euleriano
+        /// </summary>
+        /// <param name="grafo"></param>
+        /// <returns></returns>
+        public List<Rota> CircuitoEuleriano(Grafo grafo)
+        {
+            List<Rota> caminhoEuleriano = new List<Rota>();
+            List<Rota> arestas = new List<Rota>();
 
-        public void CircuitoEuleriano()
+            foreach (KeyValuePair<Hub, List<Rota>> kvp in grafo.GetRotas)
+            {
+                arestas.AddRange(kvp.Value);
+            }
+
+            Hub inicio = EscolherVerticeInicial(grafo);
+
+            Hub atual = inicio;
+
+            while (arestas.Count > 0)
+            {
+                Rota proxima = null;
+
+                // Tenta escolher uma aresta que não seja ponte
+                foreach (Rota rota in arestas)
+                {
+                    if (rota.GetOrigem() == atual || rota.GetDestino() == atual)
+                    {
+                        if (!EhPonte(grafo, rota, arestas))
+                        {
+                            proxima = rota;
+                            break;
+                        }
+                    }
+                }
+
+                if (proxima == null)
+                {
+                    proxima = arestas.First(r => r.GetOrigem() == atual || r.GetDestino() == atual);
+                }
+
+                caminhoEuleriano.Add(proxima);
+                arestas.Remove(proxima);
+
+                atual = (proxima.GetOrigem() == atual) ? proxima.GetDestino() : proxima.GetOrigem();
+            }
+
+            return caminhoEuleriano;
+        }
+
+
+        /// <summary>
+        /// Define vértice de partida para Fleury
+        /// </summary>
+        /// <param name="grafo"></param>
+        /// <returns></returns>
+        private Hub EscolherVerticeInicial(Grafo grafo)
         {
 
+            List<Hub> verticesImpares = new List<Hub>();
+
+            foreach (Hub h in grafo.GetHubs.Values)
+            {
+                int grau = GrauCompleto(grafo, h);
+                if (grau % 2 != 0)
+                    verticesImpares.Add(h);
+            }
+
+            if (verticesImpares.Count == 0)
+            {
+                return grafo.GetHubs.Values.First(); // circuito Euleriano
+            }
+            else
+            {
+                return verticesImpares.First(); // caminho Euleriano
+            }
+                
         }
+
+        /// <summary>
+        /// Método para descorir ponte, método de suporte para o caminho euleriano
+        /// </summary>
+        /// <param name="grafo"></param>
+        /// <param name="rota"></param>
+        /// <param name="arestas"></param>
+        /// <returns></returns>
+        private bool EhPonte(Grafo grafo, Rota rota, List<Rota> arestas)
+        {
+            // Remove temporariamente a aresta
+            List<Rota> copia = new List<Rota>(arestas);
+            copia.Remove(rota);
+
+            // Verifica se ainda existe caminho entre origem e destino
+            return !ExisteCaminho(rota.GetOrigem(), rota.GetDestino(), copia);
+        }
+
+
+        /// <summary>
+        /// Método para descobrir se existe um caminho viável usando busca em largura
+        /// </summary>
+        /// <param name="origem"></param>
+        /// <param name="destino"></param>
+        /// <param name="arestas"></param>
+        /// <returns></returns>
+        private bool ExisteCaminho(Hub origem, Hub destino, List<Rota> arestas)
+        {
+            HashSet<Hub> visitados = new HashSet<Hub>();
+            Queue<Hub> fila = new Queue<Hub>();
+            fila.Enqueue(origem);
+
+            while (fila.Count > 0)
+            {
+                Hub atual = fila.Dequeue();
+                if (atual == destino) return true;
+
+                foreach (Rota r in arestas)
+                {
+                    if (r.GetOrigem() == atual && !visitados.Contains(r.GetDestino()))
+                    {
+                        visitados.Add(r.GetDestino());
+                        fila.Enqueue(r.GetDestino());
+                    }
+                    else if (r.GetDestino() == atual && !visitados.Contains(r.GetOrigem()))
+                    {
+                        visitados.Add(r.GetOrigem());
+                        fila.Enqueue(r.GetOrigem());
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        
+        private int GrauCompleto(Grafo g, Hub h)
+        {
+            int grau = 0;
+            foreach (List<Rota> lista in g.GetRotas.Values)
+            {
+                foreach (Rota r in lista)
+                {
+                    if (r.GetOrigem() == h || r.GetDestino() == h)
+                        grau++;
+                }
+            }
+            return grau;
+        }
+
+
         public List<Hub> CircuitoHamiltoniano(Grafo grafo)
         {
             Dictionary<Hub, List<Rota>> Rotas = grafo.GetRotas;
