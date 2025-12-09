@@ -214,6 +214,11 @@ namespace GrafosTRABPratico
 
                 if (melhorAresta == null)
                 {
+                    Log logs1 = new Log();
+                    logs1.Registrar("Prim - Rota Unica de Inspeção");
+
+                    logs1.Registrar(AGM.VisualizarGrafo());
+                    logs1.Salvar();
                     return AGM;//Se não ouver melhor aresta a execução termina
                 }
 
@@ -229,11 +234,11 @@ namespace GrafosTRABPratico
 
             }
 
-            Log logs = new Log();
-            logs.Registrar("Prim - Rota Unica de Inspeção");
+            Log logs2 = new Log();
+            logs2.Registrar("Prim - Rota Unica de Inspeção");
 
-            logs.Registrar(AGM.VisualizarGrafo());
-            logs.Salvar();
+            logs2.Registrar(AGM.VisualizarGrafo());
+            logs2.Salvar();
 
 
             return AGM;
