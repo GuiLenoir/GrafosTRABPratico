@@ -130,7 +130,7 @@ namespace GrafosTRABPratico
 
                     case "2":
                         Console.WriteLine($"Qual o hub (vertice) de origem?");
-                        int origem2 = int.Parse(Console.ReadLine());
+                        int origem2 = int.Parse(Console.ReadLine()); 
 
                         Console.WriteLine($"Qual o hub (vertice) de destino?");
                         int destino2 = int.Parse(Console.ReadLine());
