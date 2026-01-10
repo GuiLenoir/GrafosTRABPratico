@@ -24,13 +24,25 @@ O objetivo é aplicar conceitos de **teoria dos grafos** em situações prática
 ## 📂 Estrutura do projeto
 GrafosTRABPratico/
 
-├── Program.cs         # Ponto de entrada da aplicação
+├── Algoritmos.cs           # Implementação dos algoritmos de grafos  
 
-├── Graph.cs           # Estrutura de grafo e métodos auxiliares
+├── App.config              # Configurações da aplicação  
 
-├── Algorithms.cs      # Implementação de algoritmos (BFS, DFS, Dijkstra, etc.)
+├── Grafo.cs                # Estrutura principal do grafo  
 
-└── README.md          # Documentação do projeto
+├── GrafosTRABPratico.csproj # Arquivo de projeto do .NET  
+
+├── Hub.cs                  # Representação dos vértices (hubs)  
+
+├── Log.cs                  # Controle de logs e registros  
+
+├── Menu.cs                 # Interface de navegação do programa  
+
+├── Program.cs              # Ponto de entrada da aplicação  
+
+├── Rota.cs                 # Modelagem das rotas/arestas  
+
+└── SORL.cs                 # Implementação do sistema principal de logistica SORL
 
 ---
 
